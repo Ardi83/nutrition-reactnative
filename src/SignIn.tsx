@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import auth from '@react-native-firebase/auth';
 import {
   StyleSheet,
   Text,
@@ -22,12 +23,14 @@ import {
 import {TokenClearingView} from './TokenClearingView';
 import {
   configureGoogleSignIn,
+  getToken,
   prettyJson,
   PROFILE_IMAGE_SIZE,
   RenderError,
   RenderGetCurrentUser,
   RenderHasPreviousSignIn,
 } from './components/components';
+import firestore from '@react-native-firebase/firestore';
 
 type State = {
   userInfo: User | undefined;
@@ -80,7 +83,7 @@ export class GoogleSigninSampleApp extends Component<{}, State> {
           <RenderHasPreviousSignIn />
           {this.renderAddScopes()}
           <RenderGetCurrentUser />
-          {this.renderGetTokens()}
+
           {body}
           <RenderError error={this.state.error} />
         </ScrollView>
@@ -100,38 +103,6 @@ export class GoogleSigninSampleApp extends Component<{}, State> {
           Alert.alert('user', prettyJson(user));
         }}
         title="request more scopes"
-      />
-    );
-  }
-
-  renderGetTokens() {
-    return (
-      <Button
-        onPress={async () => {
-          try {
-            const tokens = await GoogleSignin.getTokens();
-            Alert.alert('tokens', prettyJson(tokens), [
-              {
-                text: 'copy ID token',
-                onPress: () => {
-                  Clipboard.setString(tokens.idToken);
-                },
-              },
-              {
-                text: 'Cancel',
-                onPress: () => console.log('Cancel Pressed'),
-                style: 'cancel',
-              },
-            ]);
-          } catch (error) {
-            const typedError = error as NativeModuleError;
-            this.setState({
-              error: typedError,
-            });
-            Alert.alert('error', typedError.message);
-          }
-        }}
-        title="get tokens"
       />
     );
   }
@@ -163,11 +134,41 @@ export class GoogleSigninSampleApp extends Component<{}, State> {
 
   _signIn = async () => {
     try {
-      //   await GoogleSignin.hasPlayServices();
+      await GoogleSignin.hasPlayServices({showPlayServicesUpdateDialog: true});
       const {type, data} = await GoogleSignin.signIn();
       if (type === 'success') {
-        console.log({data});
+        const tokens = await getToken();
         this.setState({userInfo: data, error: undefined});
+
+        const idToken = tokens?.idToken;
+        if (!idToken) {
+          throw new Error('No ID token found');
+        }
+        const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+        const userCredential = await auth().signInWithCredential(
+          googleCredential,
+        );
+
+        // Get the user's Firebase UID
+        const {uid, displayName, email} = userCredential.user;
+
+        // Reference to the user's document in Firestore
+        const userDocRef = firestore().collection('Users').doc(uid);
+
+        // Check if the document already exists
+        const userDoc = await userDocRef.get();
+        if (!userDoc.exists) {
+          // Create a new document for the user
+          await userDocRef.set({
+            id: uid,
+            name: displayName || 'Anonymous',
+            email: email || 'No Email Provided',
+            createdAt: firestore.FieldValue.serverTimestamp(),
+          });
+          console.log('User document created in Firestore');
+        } else {
+          console.log('User already exists in Firestore');
+        }
       } else {
         // sign in was cancelled by user
         setTimeout(() => {

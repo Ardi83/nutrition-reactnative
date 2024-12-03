@@ -1,10 +1,10 @@
 import {Alert, Button, Text} from 'react-native';
 import {
   GoogleSignin,
+  NativeModuleError,
   statusCodes,
 } from '@react-native-google-signin/google-signin';
 import React from 'react';
-// @ts-ignore see docs/CONTRIBUTING.md for details
 import config from '../config/config';
 
 export const prettyJson = (value: any) => {
@@ -26,9 +26,11 @@ export const prettyJson = (value: any) => {
 export const PROFILE_IMAGE_SIZE = 150;
 export const configureGoogleSignIn = () => {
   GoogleSignin.configure({
-    webClientId: config.webClientId,
-    offlineAccess: false,
+    webClientId:
+      '720323129330-pbal9rd7h2h265ukh40ma0nhahfdfjrp.apps.googleusercontent.com',
+    offlineAccess: true,
     profileImageSize: PROFILE_IMAGE_SIZE,
+    scopes: config.scopes,
   });
 };
 
@@ -73,4 +75,16 @@ export const RenderError = ({
     );
   }
   return null;
+};
+
+export const getToken = async () => {
+  try {
+    return await GoogleSignin.getTokens();
+  } catch (error) {
+    const typedError = error as NativeModuleError;
+    console.log('error', typedError);
+    // this.setState({
+    //   error: typedError,
+    // });
+  }
 };

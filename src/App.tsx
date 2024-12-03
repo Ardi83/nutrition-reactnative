@@ -18,13 +18,17 @@ import {GoogleGenerativeAI} from '@google/generative-ai';
 import CustomHeader from './CustomHeader';
 
 import {GoogleSigninSampleApp} from './SignIn';
+import {useAppStore} from './store';
+import {geminiApiKey} from './config/config';
 
-const googole_api_key = 'AIzaSyDDJCD2UwagQT1ucbCn3c2PNWPulUeTvbA';
-const genAI = new GoogleGenerativeAI(googole_api_key);
+import firestore from '@react-native-firebase/firestore';
+
+const genAI = new GoogleGenerativeAI(geminiApiKey);
 const model = genAI.getGenerativeModel({model: 'gemini-1.5-flash'});
 
 function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+  const isDarkMode = useColorScheme() === 'light';
+  const {increaseNumber, decreaseNumber, number1, number2} = useAppStore();
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
@@ -70,6 +74,36 @@ function App(): React.JSX.Element {
           }}>
           <GoogleSigninSampleApp />
           <Text style={styles.header}>AI Text Generator</Text>
+          <TextInput
+            style={[styles.input, textColorStyle]}
+            onChange={(e: any) =>
+              useAppStore.setState({number1: Number(e.target?.value)})
+            }
+            value={String(number1)}
+          />
+          <TextInput
+            style={[styles.input, textColorStyle]}
+            onChange={(e: any) =>
+              useAppStore.setState({number1: Number(e.target?.value)})
+            }
+            value={number2.toString()}
+          />
+          <Button
+            title="Increase Number 2"
+            onPress={() => increaseNumber('2')}
+          />
+          <Button
+            title="Increase Number 1"
+            onPress={() => increaseNumber('1')}
+          />
+          <Button
+            title="Decrease Number 2"
+            onPress={() => decreaseNumber('2')}
+          />
+          <Button
+            title="Decrease Number 1"
+            onPress={() => decreaseNumber('1')}
+          />
           <TextInput
             style={[styles.input, textColorStyle]}
             placeholder="Enter your text"
