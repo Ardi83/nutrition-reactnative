@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import type {PropsWithChildren} from 'react';
 import {
   SafeAreaView,
@@ -13,47 +13,13 @@ import {
   Alert,
 } from 'react-native';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+import {Colors} from 'react-native/Libraries/NewAppScreen';
 import {GoogleGenerativeAI} from '@google/generative-ai';
 import CustomHeader from './CustomHeader';
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
+import {GoogleSigninSampleApp} from './SignIn';
 
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
-
-const googole_api_key = 'api_key';
+const googole_api_key = 'AIzaSyDDJCD2UwagQT1ucbCn3c2PNWPulUeTvbA';
 const genAI = new GoogleGenerativeAI(googole_api_key);
 const model = genAI.getGenerativeModel({model: 'gemini-1.5-flash'});
 
@@ -102,6 +68,7 @@ function App(): React.JSX.Element {
           style={{
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
           }}>
+          <GoogleSigninSampleApp />
           <Text style={styles.header}>AI Text Generator</Text>
           <TextInput
             style={[styles.input, textColorStyle]}

@@ -5,7 +5,7 @@ const CustomHeader = ({isDarkMode}: {isDarkMode: boolean}) => {
   return (
     <View style={styles.headerContainer}>
       <Image
-        source={require('./assets/images/gratisography-funflower-800x525.jpg')} // Replace with your React logo path
+        source={require('../assets/images/gratisography-funflower-800x525.jpg')} // Replace with your React logo path
         style={styles.logo}
       />
       <Text
