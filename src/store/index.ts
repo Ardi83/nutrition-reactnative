@@ -1,6 +1,7 @@
 import { create, StateCreator } from 'zustand';
 import { produce } from 'immer';
 import { UserInfo } from '../types';
+import { User } from '@react-native-google-signin/google-signin';
 
 
 export const devtools =
@@ -15,49 +16,39 @@ const initialState: AppProps = {
         userInfo: undefined,
         error: undefined,
     },
-    number1: 1,
-    number2: 2,
+    userId: '',
 }
 
 interface AppProps {
     user: UserInfo;
-    number1: number;
-    number2: number;
+    userId: string;
 }
+
 interface AppState extends AppProps {
-    getCurrentUser: () => void;
-    increaseNumber: (n: '1' | '2') => void;
-    decreaseNumber: (n: '1' | '2') => void;
+    setCurrentUser: (user: User) => void;
+    setError: (err: Error) => void;
+    setUserId: (userId: string) => void;
 }
 
 
 export const useAppStore = create<AppState>(((set) => ({
     ...initialState,
-
-    getCurrentUser: () => {
-        // Your logic for fetching the user
-    },
-    increaseNumber: (n: '1' | '2') => set(
-        produce((state: AppState) => {
-            if (n === '1') {
-                state.number1 += 1;
-            }
-            if (n === '2') {
-                state.number2 += 1;
-            }
-        })
-    ),
-    decreaseNumber: (n: '1' | '2') =>
+    setCurrentUser: (user: User) =>
         set(
             produce((state: AppState) => {
-                if (n === '1') {
-                    state.number1 -= 1;
-                }
-                if (n === '2') {
-                    state.number2 -= 1;
-                }
+                state.user.userInfo = user;
             })
         ),
-}))
-
-);
+    setError: (err: Error) =>
+        set(
+            produce((state: AppState) => {
+                state.user.error = err;
+            })
+        ),
+    setUserId: (userId: string) =>
+        set(
+            produce((state: AppState) => {
+                state.userId = userId;
+            })
+        ),
+})));

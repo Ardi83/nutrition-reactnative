@@ -26,8 +26,7 @@ export const prettyJson = (value: any) => {
 export const PROFILE_IMAGE_SIZE = 150;
 export const configureGoogleSignIn = () => {
   GoogleSignin.configure({
-    webClientId:
-      '720323129330-pbal9rd7h2h265ukh40ma0nhahfdfjrp.apps.googleusercontent.com',
+    webClientId: config.webClientId,
     offlineAccess: true,
     profileImageSize: PROFILE_IMAGE_SIZE,
     scopes: config.scopes,
@@ -83,8 +82,22 @@ export const getToken = async () => {
   } catch (error) {
     const typedError = error as NativeModuleError;
     console.log('error', typedError);
-    // this.setState({
-    //   error: typedError,
-    // });
+  }
+};
+
+export const renderAddScopes = async () => {
+  const user = await GoogleSignin.addScopes({
+    scopes: ['https://www.googleapis.com/auth/user.gender.read'],
+  });
+  return user;
+};
+
+export const revokeAccess = async () => {
+  try {
+    await GoogleSignin.revokeAccess();
+
+    return {userInfo: undefined, error: undefined};
+  } catch (error) {
+    return {error: error as NativeModuleError};
   }
 };

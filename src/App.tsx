@@ -15,27 +15,26 @@ import {
 
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 import {GoogleGenerativeAI} from '@google/generative-ai';
-import CustomHeader from './CustomHeader';
+import CustomHeader from './components/CustomHeader';
 
-import {GoogleSigninSampleApp} from './SignIn';
+import {GoogleSigninSampleApp} from './components/SignIn';
 import {useAppStore} from './store';
 import {geminiApiKey} from './config/config';
 
 import firestore from '@react-native-firebase/firestore';
+import {isDarkMode, theme} from './config/theme';
+import NutritionScreen from './components/Nutrition';
 
 const genAI = new GoogleGenerativeAI(geminiApiKey);
 const model = genAI.getGenerativeModel({model: 'gemini-1.5-flash'});
 
 function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'light';
-  const {increaseNumber, decreaseNumber, number1, number2} = useAppStore();
-
   const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+    backgroundColor: theme.primary_bg,
   };
 
   const textColorStyle = {
-    color: isDarkMode ? Colors.light : Colors.dark,
+    color: theme.text_primary,
   };
 
   const [inputText, setInputText] = useState('');
@@ -61,49 +60,19 @@ function App(): React.JSX.Element {
   return (
     <SafeAreaView style={backgroundStyle}>
       <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
+        barStyle={theme.bar_style}
+        backgroundColor={theme.primary_bg}
       />
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
         style={backgroundStyle}>
-        <CustomHeader isDarkMode={isDarkMode} />
+        <CustomHeader />
         <View
           style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
+            backgroundColor: theme.primary_bg,
           }}>
-          <GoogleSigninSampleApp />
           <Text style={styles.header}>AI Text Generator</Text>
-          <TextInput
-            style={[styles.input, textColorStyle]}
-            onChange={(e: any) =>
-              useAppStore.setState({number1: Number(e.target?.value)})
-            }
-            value={String(number1)}
-          />
-          <TextInput
-            style={[styles.input, textColorStyle]}
-            onChange={(e: any) =>
-              useAppStore.setState({number1: Number(e.target?.value)})
-            }
-            value={number2.toString()}
-          />
-          <Button
-            title="Increase Number 2"
-            onPress={() => increaseNumber('2')}
-          />
-          <Button
-            title="Increase Number 1"
-            onPress={() => increaseNumber('1')}
-          />
-          <Button
-            title="Decrease Number 2"
-            onPress={() => decreaseNumber('2')}
-          />
-          <Button
-            title="Decrease Number 1"
-            onPress={() => decreaseNumber('1')}
-          />
+          <NutritionScreen />
           <TextInput
             style={[styles.input, textColorStyle]}
             placeholder="Enter your text"
