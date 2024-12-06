@@ -1,58 +1,28 @@
 import React, {useState, useEffect} from 'react';
-import {View, TextInput, Button, Text, Alert} from 'react-native';
+import {View, TextInput, Button, Text, Alert, Platform} from 'react-native';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
+import DateTimePicker, {
+  DateTimePickerEvent,
+} from '@react-native-community/datetimepicker';
 import {useAppStore} from '../store';
-
-type NutritionData =
-  | {
-      calories: number;
-      fats: number;
-      protein: number;
-    }
-  | null
-  | undefined;
+import DatePicker from './DatePicker';
+import {getMacronutrientByDate} from '../services';
+import {Colors} from 'react-native/Libraries/NewAppScreen';
+import {theme} from '../config/theme';
+import {Macronutrient, Nutrition} from '../types';
 
 const NutritionScreen = () => {
-  const [date, setDate] = useState<any>('');
-  const [nutritionData, setNutritionData] = useState<NutritionData>(null);
+  const [show, setShow] = useState(false);
+
+  const [nutritionData, setNutritionData] = useState<Macronutrient | null>(
+    null,
+  );
   const [loading, setLoading] = useState(false);
-  const {userId} = useAppStore();
-  const fetchData = async () => {
-    const data = await fetchNutritionData(date);
+  const {userId, selectedDate} = useAppStore();
+  const fetchMacronutrientByDate = async (date: Date) => {
+    const data = await getMacronutrientByDate(date);
     setNutritionData(data);
-  };
-
-  const fetchNutritionData = async (selectedDate: NutritionData) => {
-    try {
-      const docSnapshot = await firestore()
-        .collection('Nutritions')
-        .doc('Macronutrients')
-        .get();
-
-      if (docSnapshot.exists) {
-        const macronutrient = docSnapshot.data()?.macronutrient;
-
-        // Match user and date
-        if (
-          macronutrient.user.id === auth().currentUser?.uid &&
-          macronutrient.date.toDate().toISOString().split('T')[0] ===
-            selectedDate
-        ) {
-          const {calories, fats, protein} = macronutrient.record;
-          console.log('Nutrition Data:', {calories, fats, protein});
-          return {calories, fats, protein};
-        } else {
-          console.log('No matching record found.');
-          return null;
-        }
-      } else {
-        console.log('Macronutrients document does not exist.');
-        return null;
-      }
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
   };
 
   const saveNutritionData = async () => {
@@ -63,7 +33,7 @@ const NutritionScreen = () => {
         .set(
           {
             macronutrient: {
-              date: firestore.Timestamp.fromDate(new Date(date)),
+              date: firestore.Timestamp.fromDate(new Date(selectedDate)),
               record: nutritionData,
               user: firestore().doc(`Users/${userId}`),
             },
@@ -77,16 +47,25 @@ const NutritionScreen = () => {
     }
   };
 
+  const showDatepicker = () => {
+    setShow(true);
+  };
+  const setShouldShow = (s: boolean) => {
+    setShow(s);
+  };
   return (
     <View style={{padding: 20}}>
-      <TextInput
-        placeholder="Enter Date (YYYY-MM-DD)"
-        value={date}
-        onChangeText={text => setDate(text)}
-        style={{borderBottomWidth: 1, marginBottom: 20}}
+      <Button
+        color={theme.primary_accent}
+        onPress={showDatepicker}
+        title="Select Date"
       />
-      <Text>{userId}</Text>
-      <Button title="Fetch Records" onPress={fetchData} />
+      <Text style={{marginTop: 10}}>{selectedDate.toLocaleString()}</Text>
+      <DatePicker
+        shouldShow={show}
+        setShouldShow={setShouldShow}
+        submitCallback={fetchMacronutrientByDate}
+      />
       {loading && <Text>Loading...</Text>}
 
       {nutritionData ? (
@@ -94,6 +73,7 @@ const NutritionScreen = () => {
           <Text>Calories: {nutritionData?.calories}</Text>
           <Text>Fats: {nutritionData.fats}</Text>
           <Text>Protein: {nutritionData.protein}</Text>
+          <Text>Protein: {nutritionData.carbohydrates}</Text>
         </View>
       ) : (
         !loading && (

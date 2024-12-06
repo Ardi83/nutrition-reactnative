@@ -6,7 +6,6 @@ import {
   StatusBar,
   StyleSheet,
   Text,
-  useColorScheme,
   TextInput,
   Button,
   View,
@@ -16,12 +15,7 @@ import {
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 import {GoogleGenerativeAI} from '@google/generative-ai';
 import CustomHeader from './components/CustomHeader';
-
-import {GoogleSigninSampleApp} from './components/SignIn';
-import {useAppStore} from './store';
 import {geminiApiKey} from './config/config';
-
-import firestore from '@react-native-firebase/firestore';
 import {isDarkMode, theme} from './config/theme';
 import NutritionScreen from './components/Nutrition';
 
@@ -67,11 +61,7 @@ function App(): React.JSX.Element {
         contentInsetAdjustmentBehavior="automatic"
         style={backgroundStyle}>
         <CustomHeader />
-        <View
-          style={{
-            backgroundColor: theme.primary_bg,
-          }}>
-          <Text style={styles.header}>AI Text Generator</Text>
+        <View style={styles.app_container}>
           <NutritionScreen />
           <TextInput
             style={[styles.input, textColorStyle]}
@@ -122,22 +112,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginTop: 10,
   },
-
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
+  app_container: {
+    backgroundColor: theme.primary_bg,
+    padding: 10,
   },
 });
 
