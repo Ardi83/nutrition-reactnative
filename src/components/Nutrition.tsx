@@ -9,7 +9,7 @@ import {useAppStore} from '../store';
 import DatePicker from './DatePicker';
 import {getMacronutrientByDate} from '../services';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
-import {theme} from '../config/theme';
+import {theme} from '../styles/theme';
 import {Macronutrient, Nutrition} from '../types';
 
 const NutritionScreen = () => {
@@ -19,7 +19,7 @@ const NutritionScreen = () => {
     null,
   );
   const [loading, setLoading] = useState(false);
-  const {userId, selectedDate} = useAppStore();
+  const {userId, selectedDate, setShowCalendar} = useAppStore();
   const fetchMacronutrientByDate = async (date: Date) => {
     const data = await getMacronutrientByDate(date);
     setNutritionData(data);
@@ -47,25 +47,15 @@ const NutritionScreen = () => {
     }
   };
 
-  const showDatepicker = () => {
-    setShow(true);
-  };
-  const setShouldShow = (s: boolean) => {
-    setShow(s);
-  };
   return (
     <View style={{padding: 20}}>
       <Button
         color={theme.primary_accent}
-        onPress={showDatepicker}
+        onPress={() => setShowCalendar(true)}
         title="Select Date"
       />
       <Text style={{marginTop: 10}}>{selectedDate.toLocaleString()}</Text>
-      <DatePicker
-        shouldShow={show}
-        setShouldShow={setShouldShow}
-        submitCallback={fetchMacronutrientByDate}
-      />
+      <DatePicker submitCallback={fetchMacronutrientByDate} />
       {loading && <Text>Loading...</Text>}
 
       {nutritionData ? (

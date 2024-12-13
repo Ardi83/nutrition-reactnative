@@ -12,7 +12,7 @@ import {
   User,
 } from '@react-native-google-signin/google-signin';
 import {configureGoogleSignIn, RenderError} from '../auth/helper.auth';
-import {buttons, theme} from '../config/theme';
+import {buttons, theme} from '../styles/theme';
 import {getCurrentUser, signIn, signOut} from '../auth';
 import {useAppStore} from '../store';
 

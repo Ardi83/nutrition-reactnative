@@ -17,10 +17,10 @@ export const getMacronutrientByDate = async (selectedDate: Date) => {
       const macronutrient = docSnapshot.data()?.macronutrient;
 
       // Match user and date
-      console.log(
-        macronutrient.date.toDate().toISOString().split('T')[0],
-        selectedDate?.toISOString().split('T')[0],
-      );
+      // console.log(
+      //   macronutrient.date.toDate().toISOString().split('T')[0],
+      //   selectedDate?.toISOString().split('T')[0],
+      // );
       if (
         macronutrient.user.id === auth().currentUser?.uid &&
         macronutrient.date.toDate().toISOString().split('T')[0] ===

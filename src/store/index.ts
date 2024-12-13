@@ -11,6 +11,7 @@ const initialState: AppProps = {
   userId: '',
   selectedDate: new Date(),
   nutritions: [],
+  showCalendar: false,
 };
 
 interface AppProps {
@@ -18,6 +19,7 @@ interface AppProps {
   userId: string;
   selectedDate: Date;
   nutritions: Nutrition[];
+  showCalendar: boolean;
 }
 
 interface AppState extends AppProps {
@@ -25,6 +27,7 @@ interface AppState extends AppProps {
   setError: (err: Error) => void;
   setUserId: (userId: string) => void;
   setSelectedDate: (date: Date) => void;
+  setShowCalendar: (show: boolean) => void;
 }
 
 export const useAppStore = create<AppState>(set => ({
@@ -39,6 +42,12 @@ export const useAppStore = create<AppState>(set => ({
     set(
       produce((state: AppState) => {
         state.user.error = err;
+      }),
+    ),
+  setShowCalendar: (show: boolean) =>
+    set(
+      produce((state: AppState) => {
+        state.showCalendar = show;
       }),
     ),
   setUserId: (userId: string) =>

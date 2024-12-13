@@ -1,6 +1,6 @@
 import React from 'react';
 import {View, Text, Image, StyleSheet} from 'react-native';
-import {theme} from '../config/theme';
+import {theme} from '../styles/theme';
 import {GoogleSigninSampleApp} from './SignIn';
 
 const CustomHeader = () => {
