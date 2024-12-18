@@ -5,12 +5,12 @@ import firestore from '@react-native-firebase/firestore';
 import DateTimePicker, {
   DateTimePickerEvent,
 } from '@react-native-community/datetimepicker';
-import {useAppStore} from '../store';
-import DatePicker from './DatePicker';
-import {getMacronutrientByDate} from '../services';
+import {useAppStore} from '../../store';
+import DatePicker from '../DatePicker';
+import {getMacronutrientByDate} from '../../services/apis';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
-import {theme} from '../styles/theme';
-import {Macronutrient, Nutrition} from '../types';
+import {theme} from '../../styles/theme';
+import {Macronutrient, Nutrition} from '../../types';
 
 const NutritionScreen = () => {
   const [show, setShow] = useState(false);
@@ -54,8 +54,7 @@ const NutritionScreen = () => {
         onPress={() => setShowCalendar(true)}
         title="Select Date"
       />
-      <Text style={{marginTop: 10}}>{selectedDate.toLocaleString()}</Text>
-      <DatePicker submitCallback={fetchMacronutrientByDate} />
+      <DatePicker />
       {loading && <Text>Loading...</Text>}
 
       {nutritionData ? (

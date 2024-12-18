@@ -12,9 +12,10 @@ import {
   User,
 } from '@react-native-google-signin/google-signin';
 import {configureGoogleSignIn, RenderError} from '../auth/helper.auth';
-import {buttons, theme} from '../styles/theme';
+import {theme} from '../styles/theme';
 import {getCurrentUser, signIn, signOut} from '../auth';
 import {useAppStore} from '../store';
+import {buttons} from '../styles/styles';
 
 export const GoogleSigninSampleApp = () => {
   const {
@@ -44,25 +45,19 @@ export const GoogleSigninSampleApp = () => {
     );
   };
 
-  const body = userInfo ? (
+  return userInfo ? (
     renderUserInfo(userInfo)
   ) : (
-    <GoogleSigninButton
-      size={GoogleSigninButton.Size.Standard}
-      color={GoogleSigninButton.Color.Light}
-      style={{width: 192, height: 48, marginLeft: 'auto'}}
-      onPress={signIn}
-      accessibilityLabel={'sign in'}
-    />
-  );
-
-  return (
-    <SafeAreaView style={[styles.pageContainer]}>
-      <ScrollView contentContainerStyle={styles.container}>
-        {body}
-        <RenderError error={error} />
-      </ScrollView>
-    </SafeAreaView>
+    <View style={styles.container}>
+      <GoogleSigninButton
+        size={GoogleSigninButton.Size.Standard}
+        color={GoogleSigninButton.Color.Light}
+        style={{width: 192, height: 48, marginLeft: 'auto'}}
+        onPress={signIn}
+        accessibilityLabel={'sign in'}
+      />
+      <RenderError error={error} />
+    </View>
   );
 };
 

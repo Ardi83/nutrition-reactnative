@@ -28,24 +28,25 @@ const DatePicker = ({submitCallback}: {submitCallback?: (d: Date) => void}) => {
   };
 
   const onChange = (event: DateTimePickerEvent, date: Date | undefined) => {
-    console.log('onchange');
-
     setShowCalendar(Platform.OS === 'ios');
-    if (submitCallback) {
-      submitCallback(selectedDate || new Date());
-    }
-    if (mode === 'date') {
+
+    if (mode === 'date' && event.type === 'set') {
       showTimePicker();
     }
 
-    confirmDate(event, date);
+    if (mode === 'time' && event.type === 'set') {
+      confirmDate(event, date);
+    }
+
+    if (mode === 'time' && event.type === 'dismissed') {
+      setMode('date');
+    }
   };
 
   const showMode = (currentMode: 'date' | 'time') => {
     setShowCalendar(true);
     setMode(currentMode);
   };
-  console.log(selectedDate.toLocaleString());
 
   const showTimePicker = () => {
     showMode('time');

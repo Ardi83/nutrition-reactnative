@@ -5,8 +5,9 @@ import {GoogleGenerativeAI} from '@google/generative-ai';
 import CustomHeader from './components/CustomHeader';
 import {geminiApiKey} from './config/config';
 import {theme} from './styles/theme';
-import NutritionScreen from './components/Nutrition';
+import NutritionScreen from './components/nutritions/Nutrition';
 import {app} from './styles/styles';
+import CreateForm from './components/nutritions/forms.tsx/Create-nutrition';
 
 function App(): React.JSX.Element {
   return (
@@ -20,7 +21,8 @@ function App(): React.JSX.Element {
         style={{backgroundColor: theme.primary_bg}}>
         <CustomHeader />
         <View style={app.container}>
-          <NutritionScreen />
+          {/* <NutritionScreen /> */}
+          <CreateForm />
         </View>
       </ScrollView>
     </SafeAreaView>
