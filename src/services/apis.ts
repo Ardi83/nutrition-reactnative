@@ -44,25 +44,55 @@ export const getNutritionByDate = async (selectedDate: Date) => {
 
 export const getAllNutritionLogs = async () => {
   if (!auth().currentUser) {
-    Alert.alert('User not authenticated.');
+    console.log('User not authenticated.');
     return null;
   }
   try {
     const userId = auth().currentUser?.uid;
-    const usersSnapshot = await firestore()
+    // Reference to the 'dailyRecords' collection for the user
+    const dailyRecordsRef = firestore()
       .collection('users')
       .doc(userId)
-      .get();
+      .collection('dailyRecords');
 
-    if (usersSnapshot.exists) {
-      const user = usersSnapshot.data();
-      console.log('user data : ', user);
-      return user;
-    } else {
-      console.log('No logs found.');
-      return null;
+    // Fetch all documents in the 'dailyRecords' collection
+    const dailyRecordsSnapshot = await dailyRecordsRef.get();
+
+    if (dailyRecordsSnapshot.empty) {
+      console.log('No daily records found.');
+      return [];
     }
+
+    // Iterate through each daily record and fetch its logs
+    const dailyRecordsWithLogs = await Promise.all(
+      dailyRecordsSnapshot.docs.map(async dailyRecordDoc => {
+        const date = dailyRecordDoc.id; // Get the document ID (date)
+        const dailyRecordData = dailyRecordDoc.data();
+
+        // Reference to the 'logs' subcollection
+        const logsRef = dailyRecordsRef.doc(date).collection('logs');
+
+        // Fetch all documents in the 'logs' subcollection
+        const logsSnapshot = await logsRef.get();
+
+        const logs = logsSnapshot.docs.map(logDoc => ({
+          id: logDoc.id,
+          ...logDoc.data(),
+        }));
+
+        // Return the daily record along with its logs
+        return {
+          date, // Include the date (dailyRecord ID)
+          ...dailyRecordData, // Include other dailyRecord fields
+          logs, // Include the logs for this dailyRecord
+        };
+      }),
+    );
+
+    console.log('Fetched daily records with logs:', dailyRecordsWithLogs);
+    return dailyRecordsWithLogs;
   } catch (error) {
-    console.error('Error fetching logs:', error);
+    console.error('Error fetching daily records and logs:', error);
+    throw error;
   }
 };

@@ -8,25 +8,35 @@ import {theme} from './styles/theme';
 import NutritionScreen from './components/nutritions/Nutrition';
 import {app} from './styles/styles';
 import CreateForm from './components/nutritions/forms.tsx/Create-nutrition';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {NavigationContainer} from '@react-navigation/native';
+import {RootStackParamList} from './types';
 
-function App(): React.JSX.Element {
+const Stack = createNativeStackNavigator<RootStackParamList>();
+
+function MyStack() {
   return (
-    <SafeAreaView style={{backgroundColor: theme.primary_bg}}>
+    <NavigationContainer>
+      {/* <SafeAreaView style={{backgroundColor: theme.primary_bg}}> */}
       <StatusBar
         barStyle={theme.bar_style}
         backgroundColor={theme.primary_bg}
       />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={{backgroundColor: theme.primary_bg}}>
-        <CustomHeader />
-        <View style={app.container}>
-          <CreateForm />
-          <NutritionScreen />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+      {/* <View style={app.container}> */}
+      <CustomHeader />
+      <Stack.Navigator initialRouteName="Home">
+        <Stack.Screen name="Home" component={NutritionScreen} />
+
+        <Stack.Screen name="Create" component={CreateForm} />
+      </Stack.Navigator>
+      {/* </View> */}
+      {/* </SafeAreaView> */}
+    </NavigationContainer>
   );
+}
+
+function App(): React.JSX.Element {
+  return <MyStack />;
 }
 
 export default App;

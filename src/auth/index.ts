@@ -6,7 +6,6 @@ import {
   NativeModuleError,
 } from '@react-native-google-signin/google-signin';
 import auth from '@react-native-firebase/auth';
-import firestore from '@react-native-firebase/firestore';
 import {useAppStore} from '../store';
 import {addUserCollection} from '../services/db.service';
 
@@ -88,6 +87,8 @@ export const signOut = async () => {
   try {
     await GoogleSignin.revokeAccess();
     await GoogleSignin.signOut();
+    // Sign out from Firebase Authentication
+    await auth().signOut();
     useAppStore.setState({user: {userInfo: undefined, error: undefined}});
     console.log('User signed out');
   } catch (error: any) {

@@ -10,10 +10,14 @@ import DatePicker from '../DatePicker';
 import {getAllNutritionLogs, getNutritionByDate} from '../../services/apis';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 import {theme} from '../../styles/theme';
-import {Macronutrient, Nutrition} from '../../types';
+import {Macronutrient, Nutrition, RootStackParamList} from '../../types';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {useNavigation} from '@react-navigation/native';
 
-const NutritionScreen = () => {
+type HomeScreenProps = NativeStackScreenProps<RootStackParamList, 'Home'>;
+const NutritionScreen: React.FC<HomeScreenProps> = ({navigation}) => {
   const {userId, selectedDate, setShowCalendar} = useAppStore();
+
   useEffect(() => {
     (async () => {
       await getAllNutritionLogs();
@@ -22,6 +26,10 @@ const NutritionScreen = () => {
 
   return (
     <View style={{marginTop: 20}}>
+      <Button
+        title="Create Nutrition Log"
+        onPress={() => navigation.navigate('Create')}
+      />
       {/* <Text>Calories: {nutritionData?.calories}</Text>
         <Text>Fats: {nutritionData.fats}</Text>
         <Text>Protein: {nutritionData.protein}</Text>
