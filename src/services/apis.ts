@@ -2,7 +2,7 @@ import {Alert} from 'react-native';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 
-export const getMacronutrientByDate = async (selectedDate: Date) => {
+export const getNutritionByDate = async (selectedDate: Date) => {
   if (!auth().currentUser) {
     Alert.alert('User not authenticated.');
     return null;
@@ -39,5 +39,30 @@ export const getMacronutrientByDate = async (selectedDate: Date) => {
     }
   } catch (error) {
     console.error('Error fetching data:', error);
+  }
+};
+
+export const getAllNutritionLogs = async () => {
+  if (!auth().currentUser) {
+    Alert.alert('User not authenticated.');
+    return null;
+  }
+  try {
+    const userId = auth().currentUser?.uid;
+    const usersSnapshot = await firestore()
+      .collection('users')
+      .doc(userId)
+      .get();
+
+    if (usersSnapshot.exists) {
+      const user = usersSnapshot.data();
+      console.log('user data : ', user);
+      return user;
+    } else {
+      console.log('No logs found.');
+      return null;
+    }
+  } catch (error) {
+    console.error('Error fetching logs:', error);
   }
 };

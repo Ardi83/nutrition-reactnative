@@ -21,8 +21,8 @@ function App(): React.JSX.Element {
         style={{backgroundColor: theme.primary_bg}}>
         <CustomHeader />
         <View style={app.container}>
-          {/* <NutritionScreen /> */}
           <CreateForm />
+          <NutritionScreen />
         </View>
       </ScrollView>
     </SafeAreaView>
