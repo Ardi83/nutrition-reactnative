@@ -15,12 +15,15 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {NavigationContainer} from '@react-navigation/native';
 import {Routes} from './Routes';
 import Home from './views/Home';
+import Notification from './components/Notification';
+import {useAppStore} from './store';
 
 const Stack = createNativeStackNavigator<Routes>();
 
 function MyStack() {
   const colorScheme = useColorScheme();
   const theme = colorScheme === 'dark' ? darkTheme : lightTheme;
+  const {notification} = useAppStore();
 
   return (
     <NavigationContainer>
@@ -29,6 +32,7 @@ function MyStack() {
         backgroundColor={theme.primary_bg}
       />
       <CustomHeader />
+      {notification.message && <Notification notification={notification} />}
       <Stack.Navigator initialRouteName="Home">
         <Stack.Screen
           name="Home"

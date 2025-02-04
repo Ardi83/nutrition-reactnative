@@ -1,6 +1,13 @@
 import {create} from 'zustand';
 import {produce} from 'immer';
-import {CreateDto, MealType, Nutrition, UserInfo} from '../types/index.d';
+import {
+  CreateDto,
+  LoadingStatus,
+  MealType,
+  NotificationType,
+  Nutrition,
+  UserInfo,
+} from '../types/index.d';
 import {User} from '@react-native-google-signin/google-signin';
 
 export const NutritionUnit = {
@@ -26,6 +33,14 @@ const initialState: AppProps = {
   selectedDate: new Date(),
   nutritions: [],
   showCalendar: false,
+  loading: {
+    loading: false,
+    status: LoadingStatus.Idle,
+  },
+  notification: {
+    type: NotificationType.Null,
+    message: '',
+  },
   createDto: {
     date: new Date(),
     macronutrients: {
@@ -54,6 +69,14 @@ interface AppProps {
   nutritions: Nutrition[];
   showCalendar: boolean;
   createDto: CreateDto;
+  loading: {
+    loading: boolean;
+    status: LoadingStatus;
+  };
+  notification: {
+    type: NotificationType;
+    message: string;
+  };
 }
 
 interface AppState extends AppProps {
@@ -75,6 +98,8 @@ interface AppState extends AppProps {
   setVitaminD: (vitaminD: string) => void;
   setVitaminE: (vitaminE: string) => void;
   setWater: (water: string) => void;
+  setLoading: (loading: boolean, status?: LoadingStatus) => void;
+  setInfo: (type: NotificationType, message: string) => void;
 }
 
 export const useAppStore = create<AppState>(set => ({
@@ -187,4 +212,31 @@ export const useAppStore = create<AppState>(set => ({
         state.createDto.micronutrients.water = water;
       }),
     ),
+  setLoading: (loading, status = LoadingStatus.Idle) =>
+    set(
+      produce((state: AppState) => {
+        state.loading.loading = loading;
+        state.loading.status = status;
+      }),
+    ),
+  setInfo: (type, message) => {
+    let timer: NodeJS.Timeout;
+    set(
+      produce((state: AppState) => {
+        state.notification.type = type;
+        state.notification.message = message;
+      }),
+    );
+    timer = setTimeout(() => {
+      set(
+        produce((state: AppState) => {
+          state.notification.type = NotificationType.Null;
+          state.notification.message = '';
+          if (timer) {
+            clearTimeout(timer);
+          }
+        }),
+      );
+    }, 3000);
+  },
 }));

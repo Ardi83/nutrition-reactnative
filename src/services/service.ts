@@ -1,5 +1,6 @@
 import firestore from '@react-native-firebase/firestore';
 import {useAppStore} from '../store';
+import {NotificationType, LoadingStatus} from '../types/index.d';
 
 export const addUserCollection = async (userCredential: any) => {
   const {uid, displayName, email} = userCredential.user;
@@ -22,75 +23,6 @@ export const addUserCollection = async (userCredential: any) => {
   }
 };
 
-const addDailyRecordAndLog = async (userId: string) => {
-  try {
-    const today = new Date().toISOString().split('T')[0]; // Today's date in YYYY-MM-DD format
-    const timestamp = firestore.FieldValue.serverTimestamp();
-
-    // Reference to the dailyRecord document
-    const dailyRecordRef = firestore()
-      .collection('users')
-      .doc(userId)
-      .collection('dailyRecords')
-      .doc(today);
-
-    // Check if the dailyRecord exists
-    const dailyRecordDoc = await dailyRecordRef.get();
-
-    if (!dailyRecordDoc.exists) {
-      // Create the daily record if it doesn't exist
-      await dailyRecordRef.set({
-        date: today,
-        totalCalories: 0,
-        macronutrients: {
-          colories: 0,
-          carbs: 0,
-          proteins: 0,
-          fats: 0,
-          fiber: 0,
-          suger: 0,
-        },
-        micronutrients: {
-          water: 0,
-          vitaminA: 0,
-          vitaminC: 0,
-          vitaminD: 0,
-          vitaminE: 0,
-        },
-        createdAt: timestamp,
-      });
-
-      console.log('Daily record created for:', today);
-    }
-
-    // Add a new log entry to the logs subcollection
-    const logsRef = dailyRecordRef.collection('logs');
-    await logsRef.add({
-      timestamp: timestamp, // Current time
-      mealType: 'unknown', // e.g., "breakfast", "lunch", etc.
-      macronutrients: {
-        colories: 0,
-        carbs: 0,
-        proteins: 0,
-        fats: 0,
-        fiber: 0,
-        suger: 0,
-      },
-      micronutrients: {
-        water: 0,
-        vitaminA: 0,
-        vitaminC: 0,
-        vitaminD: 0,
-        vitaminE: 0,
-      },
-    });
-
-    console.log('Log entry added.');
-  } catch (error) {
-    console.error('Error adding daily record or log:', error);
-  }
-};
-
 export const saveLog = async () => {
   const {
     userId,
@@ -100,11 +32,29 @@ export const saveLog = async () => {
       macronutrients: {calories, fats, proteins, carbs, fiber, suger},
       micronutrients: {vitaminA, vitaminC, vitaminD, vitaminE, water},
     },
+    setLoading,
+    setInfo,
   } = useAppStore.getState();
 
   try {
-    if (!mealType) {
-      return {success: false, message: 'Meal type is required.'};
+    const requiredFields = [
+      {key: 'Date', value: selectedDate},
+      {key: 'Fats', value: fats},
+      {key: 'Proteins', value: proteins},
+      {key: 'Carbs', value: carbs},
+      {key: 'Fiber', value: fiber},
+    ];
+    const missingFields = requiredFields
+      .filter(field => !field.value)
+      .map(field => field.key);
+    console.log(missingFields, 'missingFields');
+    if (missingFields.length) {
+      setLoading(false, LoadingStatus.Error);
+      setInfo(
+        NotificationType.Error,
+        `Missing required fields: ${missingFields.join(', ')}`,
+      );
+      return;
     }
 
     const selectedDay = selectedDate.toISOString().split('T')[0]; // Format: YYYY-MM-DD
@@ -199,9 +149,12 @@ export const saveLog = async () => {
         water: parseFloat(water) || 0,
       },
     });
-
+    setLoading(false, LoadingStatus.Success);
+    setInfo(NotificationType.Success, 'Log added successfully!');
     return {success: true, message: 'Log added successfully!'};
   } catch (error) {
+    setLoading(false, LoadingStatus.Error);
+    setInfo(NotificationType.Error, 'Failed to add log. Please try again.');
     console.error('Error adding log:', error);
     return {success: false, message: 'Failed to add log. Please try again.'};
   }

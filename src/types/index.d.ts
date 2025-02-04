@@ -46,6 +46,20 @@ export enum MealType {
   Other = 'Other',
 }
 
+export enum LoadingStatus {
+  Idle = 'idle',
+  Pending = 'pending',
+  Success = 'success',
+  Error = 'error',
+}
+
+export enum NotificationType {
+  Null = '',
+  Success = 'success',
+  Error = 'error',
+  Warning = 'warning',
+}
+
 // declare global {
 //   namespace ReactNavigation {
 //     interface RootParamList extends RootStackParamList {}
