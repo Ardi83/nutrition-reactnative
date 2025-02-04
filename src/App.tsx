@@ -1,36 +1,58 @@
 import React from 'react';
-import {SafeAreaView, ScrollView, StatusBar, View} from 'react-native';
-
+import {
+  SafeAreaView,
+  ScrollView,
+  StatusBar,
+  useColorScheme,
+  View,
+} from 'react-native';
 import {GoogleGenerativeAI} from '@google/generative-ai';
 import CustomHeader from './components/CustomHeader';
 import {geminiApiKey} from './config/config';
-import {theme} from './styles/theme';
-import NutritionScreen from './components/nutritions/Nutrition';
-import {app} from './styles/styles';
+import {darkTheme, lightTheme} from './styles/theme';
 import CreateForm from './components/nutritions/forms.tsx/Create-nutrition';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {NavigationContainer} from '@react-navigation/native';
-import {RootStackParamList} from './types';
+import {Routes} from './Routes';
+import Home from './views/Home';
 
-const Stack = createNativeStackNavigator<RootStackParamList>();
+const Stack = createNativeStackNavigator<Routes>();
 
 function MyStack() {
+  const colorScheme = useColorScheme();
+  const theme = colorScheme === 'dark' ? darkTheme : lightTheme;
+
   return (
     <NavigationContainer>
-      {/* <SafeAreaView style={{backgroundColor: theme.primary_bg}}> */}
       <StatusBar
         barStyle={theme.bar_style}
         backgroundColor={theme.primary_bg}
       />
-      {/* <View style={app.container}> */}
       <CustomHeader />
       <Stack.Navigator initialRouteName="Home">
-        <Stack.Screen name="Home" component={NutritionScreen} />
-
-        <Stack.Screen name="Create" component={CreateForm} />
+        <Stack.Screen
+          name="Home"
+          options={{
+            headerShown: false,
+          }}
+          component={Home}
+        />
+        <Stack.Screen
+          name="Create"
+          component={CreateForm}
+          options={{
+            headerBackground: () => (
+              <View
+                style={{
+                  backgroundColor: theme.primary_accent,
+                  flex: 1,
+                }}
+              />
+            ),
+            headerTintColor: theme.text_primary,
+          }}
+        />
       </Stack.Navigator>
-      {/* </View> */}
-      {/* </SafeAreaView> */}
     </NavigationContainer>
   );
 }

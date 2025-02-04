@@ -14,14 +14,14 @@ import {
 
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 import {GoogleGenerativeAI} from '@google/generative-ai';
-import {inputs} from '../styles/styles';
 import {geminiApiKey} from '../config/config';
-import {theme} from '../styles/theme';
+import {useStyles} from '../styles/styles';
 
 const genAI = new GoogleGenerativeAI(geminiApiKey);
 const model = genAI.getGenerativeModel({model: 'gemini-1.5-flash'});
 
 function App(): React.JSX.Element {
+  const {inputs} = useStyles();
   const [inputText, setInputText] = useState('');
   const [responseText, setResponseText] = useState('');
 

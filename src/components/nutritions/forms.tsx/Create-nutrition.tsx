@@ -1,19 +1,51 @@
 import React, {useState} from 'react';
-import {View, Text, TextInput, Button, StyleSheet, Alert} from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  StyleSheet,
+  Alert,
+  KeyboardAvoidingView,
+  ScrollView,
+  Platform,
+} from 'react-native';
 import firestore from '@react-native-firebase/firestore';
-import {useAppStore} from '../../../store';
+import {NutritionUnit, useAppStore} from '../../../store';
+import MealTypeDropdown from '../../MealTypeDropdown';
+import {useStyles} from '../../../styles/styles';
+import DatePicker from '../../DatePicker';
+import {saveLog} from '../../../services/service';
 
 const CreateForm = () => {
-  const [mealType, setMealType] = useState('');
-  const [carbs, setCarbs] = useState('');
-  const [proteins, setProteins] = useState('');
-  const [fats, setFats] = useState('');
-  const [fiber, setFiber] = useState('');
-  const [water, setWater] = useState('');
+  const {themeColor} = useStyles();
+  const {
+    createDto: {
+      mealType,
+      macronutrients: {calories, carbs, proteins, fats, fiber, suger},
+      micronutrients: {vitaminA, vitaminC, vitaminD, vitaminE, water},
+    },
+    setCalories,
+    setCarbs,
+    setProteins,
+    setFats,
+    setFiber,
+    setSuger,
+    setVitaminA,
+    setVitaminC,
+    setVitaminD,
+    setVitaminE,
+    setWater,
+  } = useAppStore();
 
   const {userId} = useAppStore();
 
   const handleSubmit = async () => {
+    const dd = useAppStore.getState().createDto;
+    console.log('create dto submit', dd);
+    const res = await saveLog();
+    console.log('res', res);
+    return;
     try {
       if (!mealType) {
         Alert.alert('Error', 'Meal type is required.');
@@ -35,12 +67,21 @@ const CreateForm = () => {
         await dailyRecordRef.set({
           date: today,
           totalCalories: 0,
-          macronutrients: {carbs: 0, proteins: 0, fats: 0},
-          micronutrients: {},
-          fiber: 0,
-          water: 0,
-          phytochemicals: 0,
-          probiotics_prebiotics: 0,
+          macronutrients: {
+            calories: 0,
+            fats: 0,
+            proteins: 0,
+            carbs: 0,
+            fiber: 0,
+            suger: 0,
+          },
+          micronutrients: {
+            vitaminA: 0,
+            vitaminC: 0,
+            vitaminD: 0,
+            vitaminE: 0,
+            water: 0,
+          },
           createdAt: firestore.FieldValue.serverTimestamp(),
         });
       }
@@ -51,21 +92,34 @@ const CreateForm = () => {
         timestamp: firestore.FieldValue.serverTimestamp(),
         mealType,
         macronutrients: {
-          carbs: parseFloat(carbs) || 0,
-          proteins: parseFloat(proteins) || 0,
+          calories: parseFloat(calories) || 0,
           fats: parseFloat(fats) || 0,
+          proteins: parseFloat(proteins) || 0,
+          carbs: parseFloat(carbs) || 0,
+          fiber: parseFloat(fiber) || 0,
+          suger: parseFloat(suger) || 0,
         },
-        fiber: parseFloat(fiber) || 0,
-        water: parseFloat(water) || 0,
+        micronutrients: {
+          vitaminA: parseFloat(vitaminA) || 0,
+          vitaminC: parseFloat(vitaminC) || 0,
+          vitaminD: parseFloat(vitaminD) || 0,
+          vitaminE: parseFloat(vitaminE) || 0,
+          water: parseFloat(water) || 0,
+        },
       });
 
       Alert.alert('Success', 'Log added successfully!');
       // Reset form fields
-      setMealType('');
-      setCarbs('');
-      setProteins('');
+      setCalories('');
       setFats('');
+      setProteins('');
+      setCarbs('');
       setFiber('');
+      setSuger('');
+      setVitaminA('');
+      setVitaminC('');
+      setVitaminD('');
+      setVitaminE('');
       setWater('');
     } catch (error) {
       console.error('Error adding log:', error);
@@ -74,69 +128,145 @@ const CreateForm = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.label}>Meal Type</Text>
-      <TextInput
-        style={styles.input}
-        value={mealType}
-        onChangeText={setMealType}
-        placeholder="e.g., Breakfast, Lunch, Dinner"
-      />
+    <KeyboardAvoidingView
+      style={[themeColor.primary, {flex: 1}]}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <ScrollView contentContainerStyle={{padding: 16}}>
+        <View style={[styles.container]}>
+          <DatePicker />
+          <MealTypeDropdown />
 
-      <Text style={styles.label}>Carbs (grams)</Text>
-      <TextInput
-        style={styles.input}
-        value={carbs}
-        onChangeText={setCarbs}
-        placeholder="e.g., 50"
-        keyboardType="numeric"
-      />
+          <Text style={[styles.label, {color: themeColor.primary.color}]}>
+            Calories ({NutritionUnit.calories})
+          </Text>
+          <TextInput
+            style={[styles.input, themeColor.primary]}
+            value={calories}
+            onChangeText={setCalories}
+            placeholder="e.g., 50"
+            keyboardType="numeric"
+          />
 
-      <Text style={styles.label}>Proteins (grams)</Text>
-      <TextInput
-        style={styles.input}
-        value={proteins}
-        onChangeText={setProteins}
-        placeholder="e.g., 20"
-        keyboardType="numeric"
-      />
+          <Text style={[styles.label, {color: themeColor.primary.color}]}>
+            Fats ({NutritionUnit.fats})
+          </Text>
+          <TextInput
+            style={[styles.input, themeColor.primary]}
+            value={fats}
+            onChangeText={setFats}
+            placeholder="e.g., 10"
+            keyboardType="numeric"
+          />
 
-      <Text style={styles.label}>Fats (grams)</Text>
-      <TextInput
-        style={styles.input}
-        value={fats}
-        onChangeText={setFats}
-        placeholder="e.g., 10"
-        keyboardType="numeric"
-      />
+          <Text style={[styles.label, {color: themeColor.primary.color}]}>
+            Carbohydrates ({NutritionUnit.carbs})
+          </Text>
+          <TextInput
+            style={[styles.input, themeColor.primary]}
+            value={carbs}
+            onChangeText={setCarbs}
+            placeholder="e.g., 50"
+            keyboardType="numeric"
+          />
 
-      <Text style={styles.label}>Fiber (grams)</Text>
-      <TextInput
-        style={styles.input}
-        value={fiber}
-        onChangeText={setFiber}
-        placeholder="e.g., 5"
-        keyboardType="numeric"
-      />
+          <Text style={[styles.label, {color: themeColor.primary.color}]}>
+            Proteins ({NutritionUnit.proteins})
+          </Text>
+          <TextInput
+            style={[styles.input, themeColor.primary]}
+            value={proteins}
+            onChangeText={setProteins}
+            placeholder="e.g., 20"
+            keyboardType="numeric"
+          />
 
-      <Text style={styles.label}>Water (ml)</Text>
-      <TextInput
-        style={styles.input}
-        value={water}
-        onChangeText={setWater}
-        placeholder="e.g., 500"
-        keyboardType="numeric"
-      />
+          <Text style={[styles.label, {color: themeColor.primary.color}]}>
+            Fiber ({NutritionUnit.fiber})
+          </Text>
+          <TextInput
+            style={[styles.input, themeColor.primary]}
+            value={fiber}
+            onChangeText={setFiber}
+            placeholder="e.g., 5"
+            keyboardType="numeric"
+          />
 
-      <Button title="Save Log" onPress={handleSubmit} />
-    </View>
+          <Text style={[styles.label, {color: themeColor.primary.color}]}>
+            Suger ({NutritionUnit.suger})
+          </Text>
+          <TextInput
+            style={[styles.input, themeColor.primary]}
+            value={suger}
+            onChangeText={setSuger}
+            placeholder="e.g., 10"
+            keyboardType="numeric"
+          />
+
+          <Text style={[styles.label, {color: themeColor.primary.color}]}>
+            Vitamin A
+          </Text>
+          <TextInput
+            style={[styles.input, themeColor.primary]}
+            value={vitaminA}
+            onChangeText={setVitaminA}
+            placeholder="e.g., 10"
+            keyboardType="numeric"
+          />
+
+          <Text style={[styles.label, {color: themeColor.primary.color}]}>
+            Vitamin C
+          </Text>
+          <TextInput
+            style={[styles.input, themeColor.primary]}
+            value={vitaminC}
+            onChangeText={setVitaminC}
+            placeholder="e.g., 20"
+            keyboardType="numeric"
+          />
+
+          <Text style={[styles.label, {color: themeColor.primary.color}]}>
+            Vitamin D
+          </Text>
+          <TextInput
+            style={[styles.input, themeColor.primary]}
+            value={vitaminD}
+            onChangeText={setVitaminD}
+            placeholder="e.g., 5"
+            keyboardType="numeric"
+          />
+
+          <Text style={[styles.label, {color: themeColor.primary.color}]}>
+            Vitamin E
+          </Text>
+          <TextInput
+            style={[styles.input, themeColor.primary]}
+            value={vitaminE}
+            onChangeText={setVitaminE}
+            placeholder="e.g., 15"
+            keyboardType="numeric"
+          />
+
+          <Text style={[styles.label, {color: themeColor.primary.color}]}>
+            Water ({NutritionUnit.water})
+          </Text>
+          <TextInput
+            style={[styles.input, themeColor.primary]}
+            value={water}
+            onChangeText={setWater}
+            placeholder="e.g., 500"
+            keyboardType="numeric"
+          />
+
+          <Button title="Save Log" onPress={handleSubmit} />
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     padding: 20,
-    backgroundColor: '#fff',
     flex: 1,
   },
   label: {
@@ -146,7 +276,6 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ccc',
     padding: 10,
     marginBottom: 15,
     borderRadius: 5,

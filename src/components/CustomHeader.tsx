@@ -1,11 +1,13 @@
 import React from 'react';
-import {View, Text, Image, StyleSheet} from 'react-native';
-import {theme} from '../styles/theme';
+import {View, Text, Image, StyleSheet, useColorScheme} from 'react-native';
 import {GoogleSigninSampleApp} from './SignIn';
+import {useStyles} from '../styles/styles';
 
 const CustomHeader = () => {
+  const {themeColor} = useStyles();
+
   return (
-    <View style={styles.headerContainer}>
+    <View style={[styles.headerContainer, themeColor.primary]}>
       <Image
         source={require('../../assets/images/logo.png')} // Replace with your React logo path
         style={styles.logo}
@@ -20,7 +22,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: theme.secondary_bg,
   },
   logo: {
     width: 80,

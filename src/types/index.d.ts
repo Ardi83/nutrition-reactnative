@@ -12,17 +12,42 @@ export type Macronutrient = {
   carbohydrates: number;
 };
 
-export type Nutrition = {
-  macronutrient: Macronutrient;
+export type Nutrition = CreateDto;
+
+export type CreateDto = {
+  date: Date;
+  macronutrients: {
+    calories: string;
+    fats: string;
+    proteins: string;
+    carbs: string;
+    fiber: string;
+    suger: string;
+  };
+  micronutrients: {
+    vitaminA: string;
+    vitaminC: string;
+    vitaminD: string;
+    vitaminE: string;
+    water: string;
+  };
+  mealType: MealType;
 };
 
-export type RootStackParamList = {
-  Home: undefined;
-  Create: undefined; // No parameters expected for the 'Create' screen
-};
-
-declare global {
-  namespace ReactNavigation {
-    interface RootParamList extends RootStackParamList {}
-  }
+export enum MealType {
+  Breakfast = 'Breakfast',
+  Lunch = 'Lunch',
+  Dinner = 'Dinner',
+  Snack = 'Snack',
+  Dessert = 'Dessert',
+  Brunch = 'Brunch',
+  PostWorkout = 'PostWorkout',
+  PreWorkout = 'PreWorkout',
+  Other = 'Other',
 }
+
+// declare global {
+//   namespace ReactNavigation {
+//     interface RootParamList extends RootStackParamList {}
+//   }
+// }

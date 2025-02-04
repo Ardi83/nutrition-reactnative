@@ -7,7 +7,7 @@ import {
 } from '@react-native-google-signin/google-signin';
 import auth from '@react-native-firebase/auth';
 import {useAppStore} from '../store';
-import {addUserCollection} from '../services/db.service';
+import {addUserCollection} from '../services/service';
 
 export const getCurrentUser = async () => {
   try {

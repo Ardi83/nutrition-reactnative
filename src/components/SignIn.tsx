@@ -12,12 +12,12 @@ import {
   User,
 } from '@react-native-google-signin/google-signin';
 import {configureGoogleSignIn, RenderError} from '../auth/helper.auth';
-import {theme} from '../styles/theme';
 import {getCurrentUser, signIn, signOut} from '../auth';
 import {useAppStore} from '../store';
-import {buttons} from '../styles/styles';
+import {useStyles} from '../styles/styles';
 
 export const GoogleSigninSampleApp = () => {
+  const {buttons, themeColor} = useStyles();
   const {
     user: {userInfo, error},
   } = useAppStore();
@@ -33,8 +33,10 @@ export const GoogleSigninSampleApp = () => {
 
   const renderUserInfo = (userInfo: User) => {
     return (
-      <View style={styles.container}>
-        <Text style={styles.welcomeText}>Welcome, {userInfo.user.name}</Text>
+      <View style={[styles.container]}>
+        <Text style={[styles.welcomeText, themeColor.primary]}>
+          Welcome, {userInfo.user.name}
+        </Text>
 
         <Pressable
           style={[buttons.button_secondary, {marginLeft: 'auto'}]}
@@ -74,7 +76,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     alignItems: 'center',
     display: 'flex',
-    color: theme.text_tertiary,
   },
   pageContainer: {flex: 1, backgroundColor: 'transparent'},
 });
