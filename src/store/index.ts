@@ -105,6 +105,7 @@ interface AppState extends AppProps {
   setMealLog: (createDto: MealLog) => void;
   setAllNutritions: (nutritions: Nutrition[]) => void;
   setAIResponse: (aiResponse: CreateAIDto) => void;
+  reset: () => void;
 }
 
 export const useAppStore = create<AppState>(set => ({
@@ -300,6 +301,11 @@ export const useAppStore = create<AppState>(set => ({
         state.createDto.micronutrients.water = res.water.toString();
       }),
     ),
+  reset: () =>
+    set(
+      produce((state: AppProps) => (state = initialState)
+      ),
+    ),
   setLoading: (loading, status = LoadingStatus.Idle) =>
     set(
       produce((state: AppState) => {
@@ -326,5 +332,6 @@ export const useAppStore = create<AppState>(set => ({
         }),
       );
     }, 3000);
+
   },
 }));

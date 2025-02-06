@@ -68,7 +68,7 @@ export const RenderError = ({
         ? `User cancelled the action`
         : `${error.message} ${error.code ? `code: ${error.code}` : ''}`;
     return (
-      <Text selectable style={{color: 'black'}}>
+      <Text selectable style={{color: 'red'}}>
         {text}
       </Text>
     );

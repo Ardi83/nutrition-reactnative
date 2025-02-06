@@ -15,9 +15,11 @@ import {configureGoogleSignIn, RenderError} from '../auth/helper.auth';
 import {getCurrentUser, signIn, signOut} from '../auth';
 import {useAppStore} from '../store';
 import {useStyles} from '../styles/styles';
+import {useNavigation} from '@react-navigation/native';
 
 export const GoogleSigninSampleApp = () => {
   const {buttons, themeColor} = useStyles();
+  const navigation = useNavigation();
   const {
     user: {userInfo, error},
   } = useAppStore();
@@ -40,7 +42,7 @@ export const GoogleSigninSampleApp = () => {
 
         <Pressable
           style={[buttons.button_secondary, {marginLeft: 'auto'}]}
-          onPress={signOut}>
+          onPress={() => signOut(navigation)}>
           <Text>Log out</Text>
         </Pressable>
       </View>

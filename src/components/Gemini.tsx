@@ -28,11 +28,12 @@ function Gemini(): React.JSX.Element {
     setLoading,
     setNotification,
   } = useAppStore();
-  const {inputs, buttons} = useStyles();
   const [inputText, setInputText] = useState('');
   const [responseText, setResponseText] = useState('');
   const [isOpened, setIsOpened] = useState(false);
   const {setAIResponse} = useAppStore();
+
+  const {inputs, themeColor, variables, buttons} = useStyles();
 
   const handleSubmit = async () => {
     if (!inputText.trim()) {
@@ -95,29 +96,38 @@ function Gemini(): React.JSX.Element {
   return (
     <View>
       <TouchableOpacity onPress={() => setIsOpened(!isOpened)}>
-        <View style={styles.header}>
-          <Text style={styles.ai}>Gemini</Text>
-          <Text>{isOpened ? '▼' : '▶'}</Text>
+        <View style={[styles.header]}>
+          <Text style={[styles.ai, themeColor.primary]}>Gemini</Text>
+          <Text style={[themeColor.primary]}>{isOpened ? '▼' : '▶'}</Text>
         </View>
       </TouchableOpacity>
       {isOpened && (
         <>
           <TextInput
-            style={[inputs.input_primary]}
+            style={[inputs.input_primary, themeColor.primary]}
             placeholder="Describe your food"
-            placeholderTextColor={Colors.gray}
+            placeholderTextColor={variables.placeholderTextColor}
             value={inputText}
             onChangeText={setInputText}
           />
           {loading && <ActivityIndicator size="large" color="#0000ff" />}
-          <Button disabled={loading} title="Submit" onPress={handleSubmit} />
-          <Text>Date and Meal Type should select manualy</Text>
+          <Pressable
+            style={buttons.button_secondary}
+            disabled={loading}
+            onPress={handleSubmit}>
+            <Text>Submit</Text>
+          </Pressable>
+          <Text style={{color: themeColor.primary.color}}>
+            Date and Meal Type should select manualy
+          </Text>
         </>
       )}
       {responseText ? (
         <View style={{}}>
-          <Text style={styles.ai}>AI Response:</Text>
-          <Text style={{}}>{responseText}</Text>
+          <Text style={[styles.ai, {color: themeColor.primary.color}]}>
+            AI Response:
+          </Text>
+          <Text style={{color: themeColor.primary.color}}>{responseText}</Text>
 
           <Pressable
             style={[buttons.button_primary]}

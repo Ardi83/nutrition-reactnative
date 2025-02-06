@@ -8,7 +8,7 @@ import {saveLog} from '../../../services/service';
 import {LoadingStatus} from '../../../types/index.d';
 
 const CreateForm = () => {
-  const {themeColor} = useStyles();
+  const {themeColor, variables} = useStyles();
   const {
     createDto,
     selectedDate,
@@ -62,6 +62,7 @@ const CreateForm = () => {
         style={[styles.input, themeColor.primary]}
         value={calories}
         onChangeText={t => setCalories(t.replace(',', '.'))}
+        placeholderTextColor={variables.placeholderTextColor}
         placeholder="e.g., 50"
         keyboardType="numeric"
       />
@@ -73,6 +74,7 @@ const CreateForm = () => {
         style={[styles.input, themeColor.primary]}
         value={fats}
         onChangeText={t => setFats(t.replace(',', '.'))}
+        placeholderTextColor={variables.placeholderTextColor}
         placeholder="e.g., 10"
         keyboardType="numeric"
       />
@@ -84,6 +86,7 @@ const CreateForm = () => {
         style={[styles.input, themeColor.primary]}
         value={carbs}
         onChangeText={t => setCarbs(t.replace(',', '.'))}
+        placeholderTextColor={variables.placeholderTextColor}
         placeholder="e.g., 50"
         keyboardType="numeric"
       />
@@ -95,6 +98,7 @@ const CreateForm = () => {
         style={[styles.input, themeColor.primary]}
         value={proteins}
         onChangeText={t => setProteins(t.replace(',', '.'))}
+        placeholderTextColor={variables.placeholderTextColor}
         placeholder="e.g., 20"
         keyboardType="numeric"
       />
@@ -106,6 +110,7 @@ const CreateForm = () => {
         style={[styles.input, themeColor.primary]}
         value={fiber}
         onChangeText={t => setFiber(t.replace(',', '.'))}
+        placeholderTextColor={variables.placeholderTextColor}
         placeholder="e.g., 5"
         keyboardType="numeric"
       />
@@ -117,6 +122,7 @@ const CreateForm = () => {
         style={[styles.input, themeColor.primary]}
         value={sugar}
         onChangeText={t => setSuger(t.replace(',', '.'))}
+        placeholderTextColor={variables.placeholderTextColor}
         placeholder="e.g., 10"
         keyboardType="numeric"
       />
@@ -128,6 +134,7 @@ const CreateForm = () => {
         style={[styles.input, themeColor.primary]}
         value={vitaminA}
         onChangeText={t => setVitaminA(t.replace(',', '.'))}
+        placeholderTextColor={variables.placeholderTextColor}
         placeholder="e.g., 10"
         keyboardType="numeric"
       />
@@ -139,6 +146,7 @@ const CreateForm = () => {
         style={[styles.input, themeColor.primary]}
         value={vitaminC}
         onChangeText={t => setVitaminC(t.replace(',', '.'))}
+        placeholderTextColor={variables.placeholderTextColor}
         placeholder="e.g., 20"
         keyboardType="numeric"
       />
@@ -150,6 +158,7 @@ const CreateForm = () => {
         style={[styles.input, themeColor.primary]}
         value={vitaminD}
         onChangeText={t => setVitaminD(t.replace(',', '.'))}
+        placeholderTextColor={variables.placeholderTextColor}
         placeholder="e.g., 5"
         keyboardType="numeric"
       />
@@ -161,6 +170,7 @@ const CreateForm = () => {
         style={[styles.input, themeColor.primary]}
         value={vitaminE}
         onChangeText={t => setVitaminE(t.replace(',', '.'))}
+        placeholderTextColor={variables.placeholderTextColor}
         placeholder="e.g., 15"
         keyboardType="numeric"
       />
@@ -172,6 +182,7 @@ const CreateForm = () => {
         style={[styles.input, themeColor.primary]}
         value={water}
         onChangeText={t => setWater(t.replace(',', '.'))}
+        placeholderTextColor={variables.placeholderTextColor}
         placeholder="e.g., 500"
         keyboardType="numeric"
       />

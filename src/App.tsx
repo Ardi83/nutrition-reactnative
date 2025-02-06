@@ -17,14 +17,16 @@ import {Routes} from './Routes';
 import Home from './views/Home';
 import Notification from './components/Notification';
 import {useAppStore} from './store';
+import auth from '@react-native-firebase/auth';
 import Create from './views/Create';
+import HomeMock from './views/Home_mock';
 
 const Stack = createNativeStackNavigator<Routes>();
 
 function MyStack() {
   const colorScheme = useColorScheme();
   const theme = colorScheme === 'dark' ? darkTheme : lightTheme;
-  const {notification} = useAppStore();
+  const {notification, userId} = useAppStore();
 
   return (
     <NavigationContainer>
@@ -34,29 +36,41 @@ function MyStack() {
       />
       <CustomHeader />
       {notification.message && <Notification notification={notification} />}
-      <Stack.Navigator initialRouteName="Home">
-        <Stack.Screen
-          name="Home"
-          options={{
-            headerShown: false,
-          }}
-          component={Home}
-        />
-        <Stack.Screen
-          name="Create"
-          component={Create}
-          options={{
-            headerBackground: () => (
-              <View
-                style={{
-                  backgroundColor: theme.secondary_accent,
-                  flex: 1,
-                }}
-              />
-            ),
-            headerTintColor: theme.text_primary,
-          }}
-        />
+      <Stack.Navigator initialRouteName={userId ? 'Home' : 'Home_mock'}>
+        {userId ? (
+          <>
+            <Stack.Screen
+              name="Home"
+              options={{
+                headerShown: false,
+              }}
+              component={Home}
+            />
+            <Stack.Screen
+              name="Create"
+              component={Create}
+              options={{
+                headerBackground: () => (
+                  <View
+                    style={{
+                      backgroundColor: theme.secondary_accent,
+                      flex: 1,
+                    }}
+                  />
+                ),
+                headerTintColor: theme.text_primary,
+              }}
+            />
+          </>
+        ) : (
+          <Stack.Screen
+            name="Home_mock"
+            component={HomeMock}
+            options={{
+              headerShown: false,
+            }}
+          />
+        )}
       </Stack.Navigator>
     </NavigationContainer>
   );

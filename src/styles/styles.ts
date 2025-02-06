@@ -68,5 +68,8 @@ export const useStyles = () => {
         borderColor: theme.borders_dividers,
       },
     }),
+    variables: {
+      placeholderTextColor: theme.text_secondary,
+    }
   };
 };

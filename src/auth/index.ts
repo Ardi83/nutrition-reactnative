@@ -1,4 +1,4 @@
-import {Alert} from 'react-native';
+import { Alert } from 'react-native';
 import {
   GoogleSignin,
   statusCodes,
@@ -6,20 +6,21 @@ import {
   NativeModuleError,
 } from '@react-native-google-signin/google-signin';
 import auth from '@react-native-firebase/auth';
-import {useAppStore} from '../store';
-import {addUserCollection} from '../services/service';
+import { useAppStore } from '../store';
+import { addUserCollection } from '../services/service';
+import { CommonActions } from '@react-navigation/native';
 
 export const getCurrentUser = async () => {
   try {
-    const {type, data} = await GoogleSignin.signInSilently();
+    const { type, data } = await GoogleSignin.signInSilently();
     if (type === 'success') {
       if (!useAppStore.getState().userId) {
         const userId = auth().currentUser?.uid;
-        useAppStore.setState({userId});
+        useAppStore.setState({ userId });
       }
       console.log('User Info:', useAppStore.getState().userId);
 
-      useAppStore.setState({user: {userInfo: data, error: undefined}});
+      useAppStore.setState({ user: { userInfo: data, error: undefined } });
     } else if (type === 'noSavedCredentialFound') {
       useAppStore.setState({
         user: {
@@ -30,16 +31,16 @@ export const getCurrentUser = async () => {
     }
   } catch (error) {
     const typedError = error as NativeModuleError;
-    useAppStore.setState({user: {userInfo: undefined, error: typedError}});
+    useAppStore.setState({ user: { userInfo: undefined, error: typedError } });
   }
 };
 
 export const signIn = async () => {
   try {
-    await GoogleSignin.hasPlayServices({showPlayServicesUpdateDialog: true});
-    const {type, data} = await GoogleSignin.signIn();
+    await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+    const { type, data } = await GoogleSignin.signIn();
     if (type === 'success') {
-      useAppStore.setState({user: {userInfo: data, error: undefined}});
+      useAppStore.setState({ user: { userInfo: data, error: undefined } });
 
       const idToken = data?.idToken;
       if (!idToken) {
@@ -83,13 +84,22 @@ export const signIn = async () => {
   }
 };
 
-export const signOut = async () => {
+export const signOut = async ({ navigation }: any) => {
   try {
     await GoogleSignin.revokeAccess();
     await GoogleSignin.signOut();
     // Sign out from Firebase Authentication
-    await auth().signOut();
-    useAppStore.setState({user: {userInfo: undefined, error: undefined}});
+    await auth().signOut().then(() => {
+      navigation.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [{ name: 'Home_mock' }],
+        })
+
+      )
+    });
+    useAppStore.setState({ userId: undefined });
+    useAppStore.setState({ user: { userInfo: undefined, error: undefined } });
     console.log('User signed out');
   } catch (error: any) {
     useAppStore.setState({
@@ -105,6 +115,6 @@ export const signOut = async () => {
 export const signInFirebase = async (idToken: string | null) => {
   const googleCredential = auth.GoogleAuthProvider.credential(idToken);
   const userCredential = await auth().signInWithCredential(googleCredential);
-  useAppStore.setState({userId: userCredential.user.uid});
+  useAppStore.setState({ userId: userCredential.user.uid });
   return userCredential;
 };
