@@ -89,15 +89,14 @@ export const signOut = async ({ navigation }: any) => {
     await GoogleSignin.revokeAccess();
     await GoogleSignin.signOut();
     // Sign out from Firebase Authentication
-    await auth().signOut().then(() => {
-      navigation.dispatch(
-        CommonActions.reset({
-          index: 0,
-          routes: [{ name: 'Home_mock' }],
-        })
+    await auth().signOut();
+    // navigation.dispatch(
+    //   CommonActions.reset({
+    //     index: 0,
+    //     routes: [{ name: 'Home_mock' }],
+    //   })
+    // )
 
-      )
-    });
     useAppStore.setState({ userId: undefined });
     useAppStore.setState({ user: { userInfo: undefined, error: undefined } });
     console.log('User signed out');

@@ -36,8 +36,9 @@ function MyStack() {
       />
       <CustomHeader />
       {notification.message && <Notification notification={notification} />}
-      <Stack.Navigator initialRouteName={userId ? 'Home' : 'Home_mock'}>
-        {userId ? (
+      <Stack.Navigator
+        initialRouteName={auth().currentUser?.uid ? 'Home' : 'Home_mock'}>
+        {auth().currentUser?.uid ? (
           <>
             <Stack.Screen
               name="Home"

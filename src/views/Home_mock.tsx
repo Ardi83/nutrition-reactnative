@@ -9,8 +9,7 @@ import {
 } from 'react-native';
 import {Routes} from '../Routes';
 
-type HomeMockProps = NativeStackScreenProps<Routes, 'Home_mock'>;
-const HomeMock: React.FC<HomeMockProps> = ({navigation}) => {
+const HomeMock = () => {
   const [activeTab, setActiveTab] = useState('records'); // State to track active tab
 
   return (

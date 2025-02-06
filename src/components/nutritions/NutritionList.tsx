@@ -1,5 +1,11 @@
 import React, {useState} from 'react';
-import {View, Text, FlatList, TouchableOpacity, StyleSheet} from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+} from 'react-native';
 import {Nutrition, MealLog} from '../../types/index.d';
 
 interface NutritionListProps {
@@ -19,11 +25,9 @@ const NutritionList: React.FC<NutritionListProps> = ({nutritions}) => {
   };
 
   return (
-    <FlatList
-      data={nutritions}
-      keyExtractor={item => item.date}
-      renderItem={({item}) => (
-        <View style={styles.item}>
+    <ScrollView>
+      {nutritions.map(item => (
+        <View key={item.date} style={styles.item}>
           <TouchableOpacity onPress={() => toggleDate(item.date)}>
             <View style={styles.header}>
               <Text style={styles.date}>{item.date}</Text>
@@ -40,26 +44,22 @@ const NutritionList: React.FC<NutritionListProps> = ({nutritions}) => {
               <Text>Carbs: {item.dailyRecord.macronutrients.carbs}</Text>
 
               <Text style={styles.sectionTitle}>Logs:</Text>
-              <FlatList
-                data={item.dailyRecord.logs}
-                keyExtractor={(log: MealLog) => log.id}
-                renderItem={({item: log}) => (
-                  <View style={styles.log}>
-                    <Text>
-                      {new Date(log.dateTime).toLocaleString()} - {log.mealType}
-                    </Text>
-                    <Text>Calories: {log.macronutrients.calories}</Text>
-                    <Text>Fats: {log.macronutrients.fats}</Text>
-                    <Text>Proteins: {log.macronutrients.proteins}</Text>
-                    <Text>Carbs: {log.macronutrients.carbs}</Text>
-                  </View>
-                )}
-              />
+              {item.dailyRecord.logs.map((log: MealLog) => (
+                <View key={log.id} style={styles.log}>
+                  <Text>
+                    {new Date(log.dateTime).toLocaleString()} - {log.mealType}
+                  </Text>
+                  <Text>Calories: {log.macronutrients.calories}</Text>
+                  <Text>Fats: {log.macronutrients.fats}</Text>
+                  <Text>Proteins: {log.macronutrients.proteins}</Text>
+                  <Text>Carbs: {log.macronutrients.carbs}</Text>
+                </View>
+              ))}
             </View>
           )}
         </View>
-      )}
-    />
+      ))}
+    </ScrollView>
   );
 };
 

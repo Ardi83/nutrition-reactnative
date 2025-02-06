@@ -38,16 +38,16 @@ const Home: React.FC<HomeProps> = ({navigation}) => {
   }
 
   return (
-    // <ScrollView contentContainerStyle={{padding: 16}}>
-    <View style={{marginTop: 0}}>
-      <Pressable
-        style={[buttons.button_primary]}
-        onPress={() => navigation.navigate('Create')}>
-        <Text>+ Add new</Text>
-      </Pressable>
-      <NutritionList nutritions={nutritions} />
-    </View>
-    // </ScrollView>
+    <ScrollView contentContainerStyle={{padding: 16}}>
+      <View style={{marginTop: 0}}>
+        <Pressable
+          style={[buttons.button_primary]}
+          onPress={() => navigation.navigate('Create')}>
+          <Text>+ Add new</Text>
+        </Pressable>
+        <NutritionList nutritions={nutritions} />
+      </View>
+    </ScrollView>
   );
 };
 
