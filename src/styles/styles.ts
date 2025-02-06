@@ -38,6 +38,10 @@ export const useStyles = () => {
         backgroundColor: theme.secondary_accent,
         ...commonButton,
       },
+      button_tertiary: {
+        backgroundColor: theme.diable_button,
+        ...commonButton,
+      },
       button_error: {
         backgroundColor: theme.error_warning,
         ...commonButton,

@@ -9,53 +9,73 @@ import {
 } from 'react-native';
 import {Routes} from '../Routes';
 import {useStyles} from '../styles/styles';
+import {useAppStore} from '../store';
+import DailyGraf from '../components/graph/DailyGraf';
+import DailyDropdown from '../components/DailyDropdown';
+import {Nutrition} from '../types/index.d';
 
 const Graph: React.FC<NativeStackScreenProps<Routes, 'Graph'>> = () => {
-  const [activeTab, setActiveTab] = useState('records'); // State to track active tab
+  const [period, setPeriod] = useState('daily'); // State to track active tab
+  const {nutritions} = useAppStore();
+  const [nutrition, setNutrition] = useState<Nutrition | null>(null);
   const {themeColor, variables, buttons} = useStyles();
+
+  const firstRecord = nutritions[0];
+
+  const selectedDay = (day: string) => {
+    setNutrition(nutritions.find(n => n.date === day) || null);
+  };
 
   return (
     <ScrollView
-      style={{flex: 1}}
-      contentContainerStyle={{flexGrow: 1}}
+      style={[themeColor.primary, {flex: 1}]}
+      contentContainerStyle={{padding: 16}}
       keyboardShouldPersistTaps="handled">
-      <View style={[themeColor.primary, {flex: 1}]}>
+      <View style={{flex: 1}}>
         {/* Two-box clickable bar */}
-        <View>
+        <View style={styles.tabBar}>
           <TouchableOpacity
-            style={[activeTab === 'records' && buttons.button_primary]}
+            style={[
+              styles.tabButton,
+              period === 'daily'
+                ? buttons.button_primary
+                : buttons.button_tertiary,
+            ]}
             onPress={() => {
-              setActiveTab('records');
+              setPeriod('daily');
             }}>
-            <Text
-              style={[
-                styles.tabText,
-                activeTab === 'records' && styles.activeTabText,
-              ]}>
-              Show Records
+            <Text style={[{color: themeColor.primary.color}, styles.tabText]}>
+              Daily Graph
             </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={[
               styles.tabButton,
-              activeTab === 'graph' && styles.activeTabButton,
+              period === 'weekly'
+                ? buttons.button_primary
+                : buttons.button_tertiary,
             ]}
-            onPress={() => setActiveTab('graph')}>
-            <Text
-              style={[
-                styles.tabText,
-                activeTab === 'graph' && styles.activeTabText,
-              ]}>
-              Show Graph
+            onPress={() => setPeriod('weekly')}>
+            <Text style={[{color: themeColor.primary.color}, styles.tabText]}>
+              Weekly Graph
             </Text>
           </TouchableOpacity>
         </View>
 
         {/* Content based on active tab */}
+
         <View style={styles.content}>
-          {activeTab === 'records' ? (
-            <Text style={styles.contentText}>Records Content Here</Text>
+          {period === 'daily' ? (
+            <>
+              {nutritions && (
+                <DailyDropdown
+                  days={nutritions.map(n => n.date)}
+                  selectedDay={selectedDay}
+                />
+              )}
+              {nutrition && <DailyGraf nutrition={nutrition} />}
+            </>
           ) : (
             <Text style={styles.contentText}>Graph Content Here</Text>
           )}
@@ -73,7 +93,6 @@ const styles = StyleSheet.create({
   tabBar: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    backgroundColor: '#f0f0f0',
     padding: 10,
   },
   tabButton: {
@@ -81,13 +100,8 @@ const styles = StyleSheet.create({
     padding: 10,
     alignItems: 'center',
   },
-  activeTabButton: {
-    backgroundColor: '#e0e0e0',
-  },
+
   tabText: {
-    color: '#000',
-  },
-  activeTabText: {
     fontWeight: 'bold',
   },
   content: {

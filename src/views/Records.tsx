@@ -9,6 +9,7 @@ import {
   FlatList,
   StyleSheet,
   ScrollView,
+  SafeAreaView,
 } from 'react-native';
 
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
@@ -30,7 +31,7 @@ const Records: React.FC<RecordsProps> = ({navigation}) => {
     setShowCalendar,
   } = useAppStore();
   const {buttons, themeColor} = useStyles();
-  useGetAllNutritions();
+  // useGetAllNutritions();
   console.log('nutritionLogs', nutritions);
 
   const Content = () => {

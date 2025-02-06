@@ -16,6 +16,7 @@ import {getCurrentUser, signIn, signOut} from '../auth';
 import {useAppStore} from '../store';
 import {useStyles} from '../styles/styles';
 import {useNavigation} from '@react-navigation/native';
+import useGetAllNutritions from '../hooks/useGetAllNutritions';
 
 export const GoogleSigninSampleApp = () => {
   const {buttons, themeColor} = useStyles();
@@ -32,6 +33,7 @@ export const GoogleSigninSampleApp = () => {
       })();
     }
   }, [userInfo]);
+  useGetAllNutritions();
 
   const renderUserInfo = (userInfo: User) => {
     return (
