@@ -1,11 +1,12 @@
 // styles.js
-import {StyleSheet, FlexAlignType, useColorScheme} from 'react-native';
-import {lightTheme, darkTheme} from './theme';
+import { StyleSheet, FlexAlignType, useColorScheme } from 'react-native';
+import { lightTheme, darkTheme } from './theme';
 
 // Common button styles
 const commonButton = {
   padding: 10,
   borderRadius: 5,
+  display: 'flex' as 'flex' | 'none' | undefined,
   alignItems: 'center' as FlexAlignType | undefined,
   justifyContent: 'center' as
     | 'center'
@@ -41,6 +42,7 @@ export const useStyles = () => {
         backgroundColor: theme.error_warning,
         ...commonButton,
       },
+
     }),
     inputs: StyleSheet.create({
       input_primary: {

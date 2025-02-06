@@ -1,16 +1,5 @@
-import React, {useState} from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  Button,
-  StyleSheet,
-  Alert,
-  KeyboardAvoidingView,
-  ScrollView,
-  Platform,
-} from 'react-native';
-import firestore from '@react-native-firebase/firestore';
+import React from 'react';
+import {View, Text, TextInput, Button, StyleSheet} from 'react-native';
 import {NutritionUnit, useAppStore} from '../../../store';
 import MealTypeDropdown from '../../MealTypeDropdown';
 import {useStyles} from '../../../styles/styles';
@@ -21,9 +10,10 @@ import {LoadingStatus} from '../../../types/index.d';
 const CreateForm = () => {
   const {themeColor} = useStyles();
   const {
+    createDto,
+    selectedDate,
     createDto: {
-      mealType,
-      macronutrients: {calories, carbs, proteins, fats, fiber, suger},
+      macronutrients: {calories, carbs, proteins, fats, fiber, sugar},
       micronutrients: {vitaminA, vitaminC, vitaminD, vitaminE, water},
     },
     setCalories,
@@ -39,149 +29,155 @@ const CreateForm = () => {
     setWater,
     loading: {loading},
     setLoading,
+    setMealLog,
   } = useAppStore();
 
   const handleSubmit = async () => {
     setLoading(true, LoadingStatus.Pending);
-    const dd = useAppStore.getState().createDto;
-    console.log('create dto submit', dd);
-    await saveLog();
+
+    const res = await saveLog();
+    console.log('create dto submit', res?.result);
+    if (res && res.success && res.result) {
+      console.log('add to store');
+      setMealLog({
+        id: res.result.id,
+        dateTime: selectedDate,
+        createdAt: new Date(),
+        macronutrients: createDto.macronutrients,
+        micronutrients: createDto.micronutrients,
+        mealType: createDto.mealType,
+      });
+    }
   };
 
   return (
-    <KeyboardAvoidingView
-      style={[themeColor.primary, {flex: 1}]}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      <ScrollView contentContainerStyle={{padding: 16}}>
-        <View style={[styles.container]}>
-          <DatePicker />
-          <MealTypeDropdown />
+    <View style={[styles.container]}>
+      <DatePicker />
+      <MealTypeDropdown />
 
-          <Text style={[styles.label, {color: themeColor.primary.color}]}>
-            Calories ({NutritionUnit.calories})
-          </Text>
-          <TextInput
-            style={[styles.input, themeColor.primary]}
-            value={calories}
-            onChangeText={t => setCalories(t.replace(',', '.'))}
-            placeholder="e.g., 50"
-            keyboardType="numeric"
-          />
+      <Text style={[styles.label, {color: themeColor.primary.color}]}>
+        Calories ({NutritionUnit.calories})
+      </Text>
+      <TextInput
+        style={[styles.input, themeColor.primary]}
+        value={calories}
+        onChangeText={t => setCalories(t.replace(',', '.'))}
+        placeholder="e.g., 50"
+        keyboardType="numeric"
+      />
 
-          <Text style={[styles.label, {color: themeColor.primary.color}]}>
-            Fats ({NutritionUnit.fats}) *
-          </Text>
-          <TextInput
-            style={[styles.input, themeColor.primary]}
-            value={fats}
-            onChangeText={t => setFats(t.replace(',', '.'))}
-            placeholder="e.g., 10"
-            keyboardType="numeric"
-          />
+      <Text style={[styles.label, {color: themeColor.primary.color}]}>
+        Fats ({NutritionUnit.fats}) *
+      </Text>
+      <TextInput
+        style={[styles.input, themeColor.primary]}
+        value={fats}
+        onChangeText={t => setFats(t.replace(',', '.'))}
+        placeholder="e.g., 10"
+        keyboardType="numeric"
+      />
 
-          <Text style={[styles.label, {color: themeColor.primary.color}]}>
-            Carbohydrates ({NutritionUnit.carbs}) *
-          </Text>
-          <TextInput
-            style={[styles.input, themeColor.primary]}
-            value={carbs}
-            onChangeText={t => setCarbs(t.replace(',', '.'))}
-            placeholder="e.g., 50"
-            keyboardType="numeric"
-          />
+      <Text style={[styles.label, {color: themeColor.primary.color}]}>
+        Carbohydrates ({NutritionUnit.carbs}) *
+      </Text>
+      <TextInput
+        style={[styles.input, themeColor.primary]}
+        value={carbs}
+        onChangeText={t => setCarbs(t.replace(',', '.'))}
+        placeholder="e.g., 50"
+        keyboardType="numeric"
+      />
 
-          <Text style={[styles.label, {color: themeColor.primary.color}]}>
-            Proteins ({NutritionUnit.proteins}) *
-          </Text>
-          <TextInput
-            style={[styles.input, themeColor.primary]}
-            value={proteins}
-            onChangeText={t => setProteins(t.replace(',', '.'))}
-            placeholder="e.g., 20"
-            keyboardType="numeric"
-          />
+      <Text style={[styles.label, {color: themeColor.primary.color}]}>
+        Proteins ({NutritionUnit.proteins}) *
+      </Text>
+      <TextInput
+        style={[styles.input, themeColor.primary]}
+        value={proteins}
+        onChangeText={t => setProteins(t.replace(',', '.'))}
+        placeholder="e.g., 20"
+        keyboardType="numeric"
+      />
 
-          <Text style={[styles.label, {color: themeColor.primary.color}]}>
-            Fiber ({NutritionUnit.fiber}) *
-          </Text>
-          <TextInput
-            style={[styles.input, themeColor.primary]}
-            value={fiber}
-            onChangeText={t => setFiber(t.replace(',', '.'))}
-            placeholder="e.g., 5"
-            keyboardType="numeric"
-          />
+      <Text style={[styles.label, {color: themeColor.primary.color}]}>
+        Fiber ({NutritionUnit.fiber}) *
+      </Text>
+      <TextInput
+        style={[styles.input, themeColor.primary]}
+        value={fiber}
+        onChangeText={t => setFiber(t.replace(',', '.'))}
+        placeholder="e.g., 5"
+        keyboardType="numeric"
+      />
 
-          <Text style={[styles.label, {color: themeColor.primary.color}]}>
-            Suger ({NutritionUnit.suger})
-          </Text>
-          <TextInput
-            style={[styles.input, themeColor.primary]}
-            value={suger}
-            onChangeText={t => setSuger(t.replace(',', '.'))}
-            placeholder="e.g., 10"
-            keyboardType="numeric"
-          />
+      <Text style={[styles.label, {color: themeColor.primary.color}]}>
+        Suger ({NutritionUnit.sugar})
+      </Text>
+      <TextInput
+        style={[styles.input, themeColor.primary]}
+        value={sugar}
+        onChangeText={t => setSuger(t.replace(',', '.'))}
+        placeholder="e.g., 10"
+        keyboardType="numeric"
+      />
 
-          <Text style={[styles.label, {color: themeColor.primary.color}]}>
-            Vitamin A
-          </Text>
-          <TextInput
-            style={[styles.input, themeColor.primary]}
-            value={vitaminA}
-            onChangeText={t => setVitaminA(t.replace(',', '.'))}
-            placeholder="e.g., 10"
-            keyboardType="numeric"
-          />
+      <Text style={[styles.label, {color: themeColor.primary.color}]}>
+        Vitamin A ({NutritionUnit.vitaminA})
+      </Text>
+      <TextInput
+        style={[styles.input, themeColor.primary]}
+        value={vitaminA}
+        onChangeText={t => setVitaminA(t.replace(',', '.'))}
+        placeholder="e.g., 10"
+        keyboardType="numeric"
+      />
 
-          <Text style={[styles.label, {color: themeColor.primary.color}]}>
-            Vitamin C
-          </Text>
-          <TextInput
-            style={[styles.input, themeColor.primary]}
-            value={vitaminC}
-            onChangeText={t => setVitaminC(t.replace(',', '.'))}
-            placeholder="e.g., 20"
-            keyboardType="numeric"
-          />
+      <Text style={[styles.label, {color: themeColor.primary.color}]}>
+        Vitamin C ({NutritionUnit.vitaminC})
+      </Text>
+      <TextInput
+        style={[styles.input, themeColor.primary]}
+        value={vitaminC}
+        onChangeText={t => setVitaminC(t.replace(',', '.'))}
+        placeholder="e.g., 20"
+        keyboardType="numeric"
+      />
 
-          <Text style={[styles.label, {color: themeColor.primary.color}]}>
-            Vitamin D
-          </Text>
-          <TextInput
-            style={[styles.input, themeColor.primary]}
-            value={vitaminD}
-            onChangeText={t => setVitaminD(t.replace(',', '.'))}
-            placeholder="e.g., 5"
-            keyboardType="numeric"
-          />
+      <Text style={[styles.label, {color: themeColor.primary.color}]}>
+        Vitamin D ({NutritionUnit.vitaminD})
+      </Text>
+      <TextInput
+        style={[styles.input, themeColor.primary]}
+        value={vitaminD}
+        onChangeText={t => setVitaminD(t.replace(',', '.'))}
+        placeholder="e.g., 5"
+        keyboardType="numeric"
+      />
 
-          <Text style={[styles.label, {color: themeColor.primary.color}]}>
-            Vitamin E
-          </Text>
-          <TextInput
-            style={[styles.input, themeColor.primary]}
-            value={vitaminE}
-            onChangeText={t => setVitaminE(t.replace(',', '.'))}
-            placeholder="e.g., 15"
-            keyboardType="numeric"
-          />
+      <Text style={[styles.label, {color: themeColor.primary.color}]}>
+        Vitamin E ({NutritionUnit.vitaminE})
+      </Text>
+      <TextInput
+        style={[styles.input, themeColor.primary]}
+        value={vitaminE}
+        onChangeText={t => setVitaminE(t.replace(',', '.'))}
+        placeholder="e.g., 15"
+        keyboardType="numeric"
+      />
 
-          <Text style={[styles.label, {color: themeColor.primary.color}]}>
-            Water ({NutritionUnit.water})
-          </Text>
-          <TextInput
-            style={[styles.input, themeColor.primary]}
-            value={water}
-            onChangeText={t => setWater(t.replace(',', '.'))}
-            placeholder="e.g., 500"
-            keyboardType="numeric"
-          />
+      <Text style={[styles.label, {color: themeColor.primary.color}]}>
+        Water ({NutritionUnit.water})
+      </Text>
+      <TextInput
+        style={[styles.input, themeColor.primary]}
+        value={water}
+        onChangeText={t => setWater(t.replace(',', '.'))}
+        placeholder="e.g., 500"
+        keyboardType="numeric"
+      />
 
-          <Button disabled={loading} title="Save Log" onPress={handleSubmit} />
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+      <Button disabled={loading} title="Save Log" onPress={handleSubmit} />
+    </View>
   );
 };
 

@@ -1,9 +1,9 @@
 import firestore from '@react-native-firebase/firestore';
-import {useAppStore} from '../store';
-import {NotificationType, LoadingStatus} from '../types/index.d';
+import { useAppStore } from '../store';
+import { NotifyType, LoadingStatus, MealLog } from '../types/index.d';
 
 export const addUserCollection = async (userCredential: any) => {
-  const {uid, displayName, email} = userCredential.user;
+  const { uid, displayName, email } = userCredential.user;
   const userDocRef = firestore().collection('users').doc(uid);
 
   const userDoc = await userDocRef.get();
@@ -29,29 +29,29 @@ export const saveLog = async () => {
     selectedDate,
     createDto: {
       mealType,
-      macronutrients: {calories, fats, proteins, carbs, fiber, suger},
-      micronutrients: {vitaminA, vitaminC, vitaminD, vitaminE, water},
+      macronutrients: { calories, fats, proteins, carbs, fiber, sugar },
+      micronutrients: { vitaminA, vitaminC, vitaminD, vitaminE, water },
     },
     setLoading,
-    setInfo,
+    setNotification,
   } = useAppStore.getState();
 
   try {
     const requiredFields = [
-      {key: 'Date', value: selectedDate},
-      {key: 'Fats', value: fats},
-      {key: 'Proteins', value: proteins},
-      {key: 'Carbs', value: carbs},
-      {key: 'Fiber', value: fiber},
+      { key: 'Date', value: selectedDate },
+      { key: 'Fats', value: fats },
+      { key: 'Proteins', value: proteins },
+      { key: 'Carbs', value: carbs },
+      { key: 'Fiber', value: fiber },
     ];
     const missingFields = requiredFields
       .filter(field => !field.value)
       .map(field => field.key);
-    console.log(missingFields, 'missingFields');
+
     if (missingFields.length) {
       setLoading(false, LoadingStatus.Error);
-      setInfo(
-        NotificationType.Error,
+      setNotification(
+        NotifyType.Error,
         `Missing required fields: ${missingFields.join(', ')}`,
       );
       return;
@@ -77,7 +77,7 @@ export const saveLog = async () => {
           proteins: parseFloat(proteins) || 0,
           carbs: parseFloat(carbs) || 0,
           fiber: parseFloat(fiber) || 0,
-          suger: parseFloat(suger) || 0,
+          sugar: parseFloat(sugar) || 0,
         },
         micronutrients: {
           vitaminA: parseFloat(vitaminA) || 0,
@@ -106,8 +106,8 @@ export const saveLog = async () => {
         'macronutrients.fiber': firestore.FieldValue.increment(
           parseFloat(fiber) || 0,
         ),
-        'macronutrients.suger': firestore.FieldValue.increment(
-          parseFloat(suger) || 0,
+        'macronutrients.sugar': firestore.FieldValue.increment(
+          parseFloat(sugar) || 0,
         ),
         'micronutrients.vitaminA': firestore.FieldValue.increment(
           parseFloat(vitaminA) || 0,
@@ -129,9 +129,10 @@ export const saveLog = async () => {
     }
 
     // Add a log to the logs subcollection
-    const logsRef = dailyRecordRef.collection('logs');
-    await logsRef.add({
-      timestamp: selectedDate,
+    const logRef = dailyRecordRef.collection('logs');
+    const newLogRef = await logRef.add({
+      dateTime: selectedDate,
+      createdAt: firestore.FieldValue.serverTimestamp(),
       mealType,
       macronutrients: {
         calories: parseFloat(calories) || 0,
@@ -139,7 +140,7 @@ export const saveLog = async () => {
         proteins: parseFloat(proteins) || 0,
         carbs: parseFloat(carbs) || 0,
         fiber: parseFloat(fiber) || 0,
-        suger: parseFloat(suger) || 0,
+        sugar: parseFloat(sugar) || 0,
       },
       micronutrients: {
         vitaminA: parseFloat(vitaminA) || 0,
@@ -149,13 +150,24 @@ export const saveLog = async () => {
         water: parseFloat(water) || 0,
       },
     });
+
+    // Fetch the newly created log to get the createdAt and updatedAt fields
+    const logSnapshot = await newLogRef.get();
+    const logData = {
+      id: logSnapshot.id,
+      dateTime: logSnapshot.data()?.dateTime ? new Date(logSnapshot.data()?.dateTime?.seconds * 1000) : new Date(),
+      ...logSnapshot.data()
+    } as MealLog;
+
+
     setLoading(false, LoadingStatus.Success);
-    setInfo(NotificationType.Success, 'Log added successfully!');
-    return {success: true, message: 'Log added successfully!'};
+    setNotification(NotifyType.Success, 'Log added successfully!');
+    return { success: true, result: logData };
+
   } catch (error) {
     setLoading(false, LoadingStatus.Error);
-    setInfo(NotificationType.Error, 'Failed to add log. Please try again.');
+    setNotification(NotifyType.Error, 'Failed to add log. Please try again.');
     console.error('Error adding log:', error);
-    return {success: false, message: 'Failed to add log. Please try again.'};
+    return { success: false, message: 'Failed to add log. Please try again.', result: null };
   }
 };

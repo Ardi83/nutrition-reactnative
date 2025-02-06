@@ -1,6 +1,7 @@
-import {Alert} from 'react-native';
+import { Alert } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
+import { MealLog, Nutrition } from '../types/index.d';
 
 export const getNutritionByDate = async (selectedDate: Date) => {
   if (!auth().currentUser) {
@@ -24,10 +25,10 @@ export const getNutritionByDate = async (selectedDate: Date) => {
       if (
         macronutrient.user.id === auth().currentUser?.uid &&
         macronutrient.date.toDate().toISOString().split('T')[0] ===
-          selectedDate?.toISOString().split('T')[0]
+        selectedDate?.toISOString().split('T')[0]
       ) {
-        const {calories, fats, protein} = macronutrient.record;
-        console.log('Nutrition Data:', {calories, fats, protein});
+        const { calories, fats, protein } = macronutrient.record;
+        console.log('Nutrition Data:', { calories, fats, protein });
         return macronutrient.record;
       } else {
         console.log('No matching record found.');
@@ -78,14 +79,16 @@ export const getAllNutritionLogs = async () => {
         const logs = logsSnapshot.docs.map(logDoc => ({
           id: logDoc.id,
           ...logDoc.data(),
-        }));
+          dateTime: new Date(logDoc.data().dateTime.seconds * 1000),
+        })) as MealLog[];
+
+        const allNutritionLogs = {
+          date,
+          dailyRecord: { ...dailyRecordData, logs },
+        } as Nutrition;
 
         // Return the daily record along with its logs
-        return {
-          date, // Include the date (dailyRecord ID)
-          ...dailyRecordData, // Include other dailyRecord fields
-          logs, // Include the logs for this dailyRecord
-        };
+        return allNutritionLogs;
       }),
     );
 

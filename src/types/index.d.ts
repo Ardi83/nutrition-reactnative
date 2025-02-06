@@ -1,4 +1,4 @@
-import {User} from '@react-native-google-signin/google-signin';
+import { User } from '@react-native-google-signin/google-signin';
 
 export type UserInfo = {
   userInfo: User | undefined;
@@ -6,32 +6,71 @@ export type UserInfo = {
 };
 
 export type Macronutrient = {
-  calories: number;
-  fats: number;
-  protein: number;
-  carbohydrates: number;
+  [key: string]: string; // Index signature
+  calories: string;
+  fats: string;
+  proteins: string;
+  carbs: string;
+  fiber: string;
+  sugar: string;
 };
 
-export type Nutrition = CreateDto;
+export type Micronutrients = {
+  [key: string]: string; // Index signature
+  vitaminA: string;
+  vitaminC: string;
+  vitaminD: string;
+  vitaminE: string;
+  water: string;
+};
+
+export type DailyRecord = {
+  date: string;
+  macronutrients: Macronutrient;
+  micronutrients: Micronutrients;
+  createdAt: Date;
+  updatedAt?: Date;
+  logs: MealLog[];
+}
+
+export type MealLog = {
+  id: string;
+  dateTime: Date;
+  mealType: MealType;
+  macronutrients: Macronutrient;
+  micronutrients: Micronutrients;
+  createdAt: Date;
+  updatedAt?: Date;
+}
+
+export type Nutrition = {
+  date: string;
+  dailyRecord: DailyRecord;
+}
 
 export type CreateDto = {
   date: Date;
-  macronutrients: {
-    calories: string;
-    fats: string;
-    proteins: string;
-    carbs: string;
-    fiber: string;
-    suger: string;
-  };
-  micronutrients: {
-    vitaminA: string;
-    vitaminC: string;
-    vitaminD: string;
-    vitaminE: string;
-    water: string;
-  };
+  macronutrients: Macronutrient;
+  micronutrients: Micronutrients;
   mealType: MealType;
+};
+
+type NutritionAIInfo = {
+  calories: number;
+  fats: number;
+  proteins: number;
+  carbs: number;
+  fiber: number;
+  sugar: number;
+  vitaminA: number;
+  vitaminC: number;
+  vitaminD: number;
+  vitaminE: number;
+  water: number;
+};
+
+type CreateAIDto = {
+  [key: string]: NutritionAIInfo;
 };
 
 export enum MealType {
@@ -53,7 +92,7 @@ export enum LoadingStatus {
   Error = 'error',
 }
 
-export enum NotificationType {
+export enum NotifyType {
   Null = '',
   Success = 'success',
   Error = 'error',

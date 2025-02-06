@@ -1,14 +1,17 @@
-import {create} from 'zustand';
-import {produce} from 'immer';
+import { create } from 'zustand';
+import { produce } from 'immer';
 import {
+  CreateAIDto,
   CreateDto,
   LoadingStatus,
+  MealLog,
   MealType,
-  NotificationType,
+  NotifyType,
   Nutrition,
   UserInfo,
 } from '../types/index.d';
-import {User} from '@react-native-google-signin/google-signin';
+import { User } from '@react-native-google-signin/google-signin';
+import { combineAllItems } from '../helper/helper.functions';
 
 export const NutritionUnit = {
   calories: 'cal',
@@ -16,7 +19,7 @@ export const NutritionUnit = {
   proteins: 'g',
   carbs: 'g',
   fiber: 'g',
-  suger: 'g',
+  sugar: 'g',
   vitaminA: 'IU',
   vitaminC: 'mg',
   vitaminD: 'IU',
@@ -38,7 +41,7 @@ const initialState: AppProps = {
     status: LoadingStatus.Idle,
   },
   notification: {
-    type: NotificationType.Null,
+    type: NotifyType.Null,
     message: '',
   },
   createDto: {
@@ -49,7 +52,7 @@ const initialState: AppProps = {
       proteins: '',
       carbs: '',
       fiber: '',
-      suger: '',
+      sugar: '',
     },
     micronutrients: {
       vitaminA: '',
@@ -74,7 +77,7 @@ interface AppProps {
     status: LoadingStatus;
   };
   notification: {
-    type: NotificationType;
+    type: NotifyType;
     message: string;
   };
 }
@@ -85,21 +88,23 @@ interface AppState extends AppProps {
   setUserId: (userId: string) => void;
   setSelectedDate: (date: Date) => void;
   setShowCalendar: (show: boolean) => void;
-  createNutrition: (createDto: CreateDto) => void;
   setMealType: (mealType: MealType) => void;
   setCalories: (calories: string) => void;
   setFats: (fats: string) => void;
   setProteins: (proteins: string) => void;
   setCarbs: (carbs: string) => void;
   setFiber: (fiber: string) => void;
-  setSuger: (suger: string) => void;
+  setSuger: (sugar: string) => void;
   setVitaminA: (vitaminA: string) => void;
   setVitaminC: (vitaminC: string) => void;
   setVitaminD: (vitaminD: string) => void;
   setVitaminE: (vitaminE: string) => void;
   setWater: (water: string) => void;
   setLoading: (loading: boolean, status?: LoadingStatus) => void;
-  setInfo: (type: NotificationType, message: string) => void;
+  setNotification: (type: NotifyType, message: string) => void;
+  setMealLog: (createDto: MealLog) => void;
+  setAllNutritions: (nutritions: Nutrition[]) => void;
+  setAIResponse: (aiResponse: CreateAIDto) => void;
 }
 
 export const useAppStore = create<AppState>(set => ({
@@ -134,10 +139,76 @@ export const useAppStore = create<AppState>(set => ({
         state.selectedDate = date;
       }),
     ),
-  createNutrition: (createDto: CreateDto) =>
+  setMealLog: (resultCreate: MealLog) =>
     set(
       produce((state: AppState) => {
-        state.nutritions.push(createDto);
+        const date = resultCreate.dateTime.toISOString().split('T')[0];
+        // Find the nutrition entry for the given date
+        const nutritionIndex = state.nutritions.findIndex(
+          (nutrition) => nutrition.date === date
+        );
+        console.log('Nutrition Index:', nutritionIndex);
+
+
+        // // Create a new MealLog object
+        const newMealLog: MealLog = {
+          id: resultCreate.id,
+          dateTime: resultCreate.dateTime,
+          mealType: resultCreate.mealType,
+          macronutrients: resultCreate.macronutrients,
+          micronutrients: resultCreate.micronutrients,
+          createdAt: resultCreate.createdAt,
+          updatedAt: resultCreate.updatedAt ?? undefined,
+        };
+
+        if (nutritionIndex !== -1) {
+          // If the nutrition entry exists, push the new log and update dailyRecord
+          const nutrition = state.nutritions[nutritionIndex];
+          nutrition.dailyRecord.logs.push(newMealLog);
+          nutrition.dailyRecord.logs.sort((a, b) => a.dateTime.getTime() - b.dateTime.getTime());
+
+          // Accumulate macronutrients (convert strings to numbers)
+          for (const key in resultCreate.macronutrients) {
+            if (resultCreate.macronutrients.hasOwnProperty(key)) {
+              const currentValue = parseFloat(nutrition.dailyRecord.macronutrients[key] || '0');
+              const newValue = parseFloat(resultCreate.macronutrients[key] || '0');
+              nutrition.dailyRecord.macronutrients[key] = (currentValue + newValue).toString();
+            }
+          }
+
+          // Accumulate micronutrients (convert strings to numbers)
+          for (const key in resultCreate.micronutrients) {
+            if (resultCreate.micronutrients.hasOwnProperty(key)) {
+              const currentValue = parseFloat(nutrition.dailyRecord.micronutrients[key] || '0');
+              const newValue = parseFloat(resultCreate.micronutrients[key] || '0');
+              nutrition.dailyRecord.micronutrients[key] = (currentValue + newValue).toString();
+            }
+          }
+
+          // Update the updatedAt field
+          nutrition.dailyRecord.updatedAt = new Date();
+        } else {
+          // If the nutrition entry does not exist, create a new one
+          const newNutrition: Nutrition = {
+            date: date,
+            dailyRecord: {
+              date: date,
+              macronutrients: { ...resultCreate.macronutrients }, // Copy macronutrients
+              micronutrients: { ...resultCreate.micronutrients }, // Copy micronutrients
+              logs: [newMealLog],
+              createdAt: resultCreate.createdAt,
+              updatedAt: new Date(),
+            },
+          };
+          state.nutritions.push(newNutrition);
+          state.nutritions.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+        }
+      }),
+    ),
+  setAllNutritions: (nutritions: Nutrition[]) =>
+    set(
+      produce((state: AppState) => {
+        state.nutritions = nutritions;
       }),
     ),
   setMealType: mealType =>
@@ -176,10 +247,10 @@ export const useAppStore = create<AppState>(set => ({
         state.createDto.macronutrients.fiber = fiber;
       }),
     ),
-  setSuger: suger =>
+  setSuger: sugar =>
     set(
       produce((state: AppState) => {
-        state.createDto.macronutrients.suger = suger;
+        state.createDto.macronutrients.sugar = sugar;
       }),
     ),
   setVitaminA: vitaminA =>
@@ -212,6 +283,23 @@ export const useAppStore = create<AppState>(set => ({
         state.createDto.micronutrients.water = water;
       }),
     ),
+  setAIResponse: (aiResponse: CreateAIDto) =>
+    set(
+      produce((state: AppState) => {
+        const res = combineAllItems(aiResponse);
+        state.createDto.macronutrients.calories = res.calories.toString();
+        state.createDto.macronutrients.fats = res.fats.toString();
+        state.createDto.macronutrients.proteins = res.proteins.toString();
+        state.createDto.macronutrients.carbs = res.carbs.toString();
+        state.createDto.macronutrients.fiber = res.fiber.toString();
+        state.createDto.macronutrients.sugar = res.sugar.toString();
+        state.createDto.micronutrients.vitaminA = res.vitaminA.toString();
+        state.createDto.micronutrients.vitaminC = res.vitaminC.toString();
+        state.createDto.micronutrients.vitaminD = res.vitaminD.toString();
+        state.createDto.micronutrients.vitaminE = res.vitaminE.toString();
+        state.createDto.micronutrients.water = res.water.toString();
+      }),
+    ),
   setLoading: (loading, status = LoadingStatus.Idle) =>
     set(
       produce((state: AppState) => {
@@ -219,7 +307,7 @@ export const useAppStore = create<AppState>(set => ({
         state.loading.status = status;
       }),
     ),
-  setInfo: (type, message) => {
+  setNotification: (type, message) => {
     let timer: NodeJS.Timeout;
     set(
       produce((state: AppState) => {
@@ -230,7 +318,7 @@ export const useAppStore = create<AppState>(set => ({
     timer = setTimeout(() => {
       set(
         produce((state: AppState) => {
-          state.notification.type = NotificationType.Null;
+          state.notification.type = NotifyType.Null;
           state.notification.message = '';
           if (timer) {
             clearTimeout(timer);

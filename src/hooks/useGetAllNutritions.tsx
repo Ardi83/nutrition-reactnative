@@ -1,0 +1,28 @@
+// hooks/useNutritionLogs.js
+import {useEffect} from 'react';
+import {useAppStore} from '../store';
+import {getAllNutritionLogs} from '../services/apis';
+import {NotifyType} from '../types/index.d';
+
+const useNutritionLogs = () => {
+  const {setAllNutritions, setLoading, setNotification} = useAppStore();
+
+  useEffect(() => {
+    const fetchNutritionLogs = async () => {
+      setLoading(true);
+
+      try {
+        const logs = await getAllNutritionLogs();
+        logs && setAllNutritions(logs);
+      } catch (error) {
+        setNotification(NotifyType.Error, 'Fetching nutrition logs...');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchNutritionLogs();
+  }, [setAllNutritions, setLoading, setNotification]);
+};
+
+export default useNutritionLogs;

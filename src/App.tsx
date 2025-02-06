@@ -17,6 +17,7 @@ import {Routes} from './Routes';
 import Home from './views/Home';
 import Notification from './components/Notification';
 import {useAppStore} from './store';
+import Create from './views/Create';
 
 const Stack = createNativeStackNavigator<Routes>();
 
@@ -43,12 +44,12 @@ function MyStack() {
         />
         <Stack.Screen
           name="Create"
-          component={CreateForm}
+          component={Create}
           options={{
             headerBackground: () => (
               <View
                 style={{
-                  backgroundColor: theme.primary_accent,
+                  backgroundColor: theme.secondary_accent,
                   flex: 1,
                 }}
               />

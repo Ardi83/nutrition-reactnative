@@ -1,22 +1,22 @@
 // components/Notification.js
 import React from 'react';
 import {View, Text, StyleSheet} from 'react-native';
-import {NotificationType} from '../types/index.d';
+import {NotifyType} from '../types/index.d';
 
 const Notification = ({
   notification,
 }: {
-  notification: {type: NotificationType; message: string};
+  notification: {type: NotifyType; message: string};
 }) => {
   // Determine the style based on the type
   const {type, message} = notification;
   const getNotificationStyle = () => {
     switch (type) {
-      case NotificationType.Error:
+      case NotifyType.Error:
         return styles.error;
-      case NotificationType.Success:
+      case NotifyType.Success:
         return styles.success;
-      case NotificationType.Warning:
+      case NotifyType.Warning:
         return styles.warning;
       default:
         return styles.info;

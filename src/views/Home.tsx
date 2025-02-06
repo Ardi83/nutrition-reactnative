@@ -1,5 +1,15 @@
 import React, {useState, useEffect} from 'react';
-import {View, TextInput, Button, Pressable, Text} from 'react-native';
+import {
+  View,
+  TextInput,
+  Button,
+  Pressable,
+  Text,
+  ActivityIndicator,
+  FlatList,
+  StyleSheet,
+  ScrollView,
+} from 'react-native';
 
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {useNavigation} from '@react-navigation/native';
@@ -7,30 +17,37 @@ import {getAllNutritionLogs} from '../services/apis';
 import {Routes} from '../Routes';
 import {useAppStore} from '../store';
 import {useStyles} from '../styles/styles';
+import useGetAllNutritions from '../hooks/useGetAllNutritions';
+import NutritionList from '../components/nutritions/NutritionList';
 
 type HomeProps = NativeStackScreenProps<Routes, 'Home'>;
 const Home: React.FC<HomeProps> = ({navigation}) => {
-  const {userId, selectedDate, setShowCalendar} = useAppStore();
+  const {
+    userId,
+    selectedDate,
+    loading: {loading},
+    nutritions,
+    setShowCalendar,
+  } = useAppStore();
   const {buttons} = useStyles();
+  useGetAllNutritions();
+  console.log('nutritionLogs', nutritions);
 
-  useEffect(() => {
-    (async () => {
-      await getAllNutritionLogs();
-    })();
-  }, []);
+  if (loading) {
+    return <ActivityIndicator size="large" color="#0000ff" />;
+  }
 
   return (
-    <View style={{marginTop: 20}}>
+    // <ScrollView contentContainerStyle={{padding: 16}}>
+    <View style={{marginTop: 0}}>
       <Pressable
-        style={buttons.button_secondary}
+        style={[buttons.button_primary]}
         onPress={() => navigation.navigate('Create')}>
         <Text>+ Add new</Text>
       </Pressable>
-      {/* <Text>Calories: {nutritionData?.calories}</Text>
-        <Text>Fats: {nutritionData.fats}</Text>
-        <Text>Protein: {nutritionData.protein}</Text>
-        <Text>Protein: {nutritionData.carbohydrates}</Text> */}
+      <NutritionList nutritions={nutritions} />
     </View>
+    // </ScrollView>
   );
 };
 
