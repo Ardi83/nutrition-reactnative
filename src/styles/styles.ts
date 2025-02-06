@@ -1,6 +1,6 @@
 // styles.js
-import { StyleSheet, FlexAlignType, useColorScheme } from 'react-native';
-import { lightTheme, darkTheme } from './theme';
+import {StyleSheet, FlexAlignType, useColorScheme} from 'react-native';
+import {lightTheme, darkTheme} from './theme';
 
 // Common button styles
 const commonButton = {
@@ -42,7 +42,6 @@ export const useStyles = () => {
         backgroundColor: theme.error_warning,
         ...commonButton,
       },
-
     }),
     inputs: StyleSheet.create({
       input_primary: {
@@ -70,6 +69,11 @@ export const useStyles = () => {
     }),
     variables: {
       placeholderTextColor: theme.text_secondary,
-    }
+      colors: {
+        primary: theme.primary_accent,
+        secondary: theme.secondary_accent,
+        error: theme.error_warning,
+      },
+    },
   };
 };

@@ -8,23 +8,22 @@ import {
   ScrollView,
 } from 'react-native';
 import {Routes} from '../Routes';
+import {useStyles} from '../styles/styles';
 
-const HomeMock = () => {
+const Graph: React.FC<NativeStackScreenProps<Routes, 'Graph'>> = () => {
   const [activeTab, setActiveTab] = useState('records'); // State to track active tab
+  const {themeColor, variables, buttons} = useStyles();
 
   return (
     <ScrollView
       style={{flex: 1}}
       contentContainerStyle={{flexGrow: 1}}
       keyboardShouldPersistTaps="handled">
-      <View style={styles.container}>
+      <View style={[themeColor.primary, {flex: 1}]}>
         {/* Two-box clickable bar */}
-        <View style={styles.tabBar}>
+        <View>
           <TouchableOpacity
-            style={[
-              styles.tabButton,
-              activeTab === 'records' && styles.activeTabButton,
-            ]}
+            style={[activeTab === 'records' && buttons.button_primary]}
             onPress={() => {
               setActiveTab('records');
             }}>
@@ -68,49 +67,35 @@ const HomeMock = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     padding: 20,
-    // backgroundColor: '#f5f5f5',
+    flex: 1,
   },
   tabBar: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    // backgroundColor: '#fff',
-    borderRadius: 10,
-    overflow: 'hidden',
-    elevation: 3, // Shadow for Android
-    shadowColor: '#000', // Shadow for iOS
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    backgroundColor: '#f0f0f0',
+    padding: 10,
   },
   tabButton: {
     flex: 1,
-    padding: 15,
+    padding: 10,
     alignItems: 'center',
-    backgroundColor: '#fff',
   },
   activeTabButton: {
-    backgroundColor: '#6200ee', // Active tab background color
+    backgroundColor: '#e0e0e0',
   },
   tabText: {
-    fontSize: 16,
-    color: '#6200ee', // Inactive tab text color
-    fontWeight: 'bold',
+    color: '#000',
   },
   activeTabText: {
-    color: '#fff', // Active tab text color
+    fontWeight: 'bold',
   },
   content: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 20,
+    padding: 20,
   },
   contentText: {
-    fontSize: 18,
-    color: '#333',
+    fontSize: 20,
   },
 });
 
-export default HomeMock;
+export default Graph;

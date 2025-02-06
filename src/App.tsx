@@ -14,12 +14,13 @@ import CreateForm from './components/nutritions/forms.tsx/Create-nutrition';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {NavigationContainer} from '@react-navigation/native';
 import {Routes} from './Routes';
-import Home from './views/Home';
 import Notification from './components/Notification';
 import {useAppStore} from './store';
 import auth from '@react-native-firebase/auth';
 import Create from './views/Create';
-import HomeMock from './views/Home_mock';
+import Home from './views/Home';
+import Records from './views/Records';
+import Graph from './views/Graph';
 
 const Stack = createNativeStackNavigator<Routes>();
 
@@ -36,16 +37,30 @@ function MyStack() {
       />
       <CustomHeader />
       {notification.message && <Notification notification={notification} />}
-      <Stack.Navigator
-        initialRouteName={auth().currentUser?.uid ? 'Home' : 'Home_mock'}>
-        {auth().currentUser?.uid ? (
+      <Stack.Navigator initialRouteName={'Home'}>
+        <Stack.Screen
+          name="Home"
+          component={Home}
+          options={{
+            headerShown: false,
+          }}
+        />
+        {auth().currentUser?.uid && (
           <>
             <Stack.Screen
-              name="Home"
+              name="Records"
+              component={Records}
               options={{
-                headerShown: false,
+                headerBackground: () => (
+                  <View
+                    style={{
+                      backgroundColor: theme.secondary_accent,
+                      flex: 1,
+                    }}
+                  />
+                ),
+                headerTintColor: theme.text_primary,
               }}
-              component={Home}
             />
             <Stack.Screen
               name="Create"
@@ -62,15 +77,22 @@ function MyStack() {
                 headerTintColor: theme.text_primary,
               }}
             />
+            <Stack.Screen
+              name="Graph"
+              component={Graph}
+              options={{
+                headerBackground: () => (
+                  <View
+                    style={{
+                      backgroundColor: theme.secondary_accent,
+                      flex: 1,
+                    }}
+                  />
+                ),
+                headerTintColor: theme.text_primary,
+              }}
+            />
           </>
-        ) : (
-          <Stack.Screen
-            name="Home_mock"
-            component={HomeMock}
-            options={{
-              headerShown: false,
-            }}
-          />
         )}
       </Stack.Navigator>
     </NavigationContainer>
