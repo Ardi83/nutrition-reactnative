@@ -20,9 +20,9 @@ import useGetAllNutritions from '../hooks/useGetAllNutritions';
 
 export const GoogleSigninSampleApp = () => {
   const {buttons, themeColor} = useStyles();
-  const navigation = useNavigation();
   const {
     user: {userInfo, error},
+    reset,
   } = useAppStore();
 
   useEffect(() => {
@@ -33,7 +33,6 @@ export const GoogleSigninSampleApp = () => {
       })();
     }
   }, [userInfo]);
-  useGetAllNutritions();
 
   const renderUserInfo = (userInfo: User) => {
     return (
@@ -44,7 +43,10 @@ export const GoogleSigninSampleApp = () => {
 
         <Pressable
           style={[buttons.button_secondary, {marginLeft: 'auto'}]}
-          onPress={() => signOut(navigation)}>
+          onPress={() => {
+            reset();
+            signOut();
+          }}>
           <Text>Log out</Text>
         </Pressable>
       </View>

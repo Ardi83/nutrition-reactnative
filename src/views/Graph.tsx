@@ -29,7 +29,7 @@ const Graph: React.FC<NativeStackScreenProps<Routes, 'Graph'>> = () => {
   return (
     <ScrollView
       style={[themeColor.primary, {flex: 1}]}
-      contentContainerStyle={{padding: 16}}
+      contentContainerStyle={{paddingVertical: 16}}
       keyboardShouldPersistTaps="handled">
       <View style={{flex: 1}}>
         {/* Two-box clickable bar */}

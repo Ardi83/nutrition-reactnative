@@ -84,7 +84,7 @@ export const signIn = async () => {
   }
 };
 
-export const signOut = async ({ navigation }: any) => {
+export const signOut = async () => {
   try {
     await GoogleSignin.revokeAccess();
     await GoogleSignin.signOut();

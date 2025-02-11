@@ -5,7 +5,8 @@ import {getAllNutritionLogs} from '../services/apis';
 import {NotifyType} from '../types/index.d';
 
 const useNutritionLogs = () => {
-  const {setAllNutritions, setLoading, setNotification} = useAppStore();
+  const {setAllNutritions, setLoading, setNotification, nutritions, userId} =
+    useAppStore();
 
   useEffect(() => {
     const fetchNutritionLogs = async () => {
@@ -21,8 +22,10 @@ const useNutritionLogs = () => {
       }
     };
 
-    fetchNutritionLogs();
-  }, [setAllNutritions, setLoading, setNotification]);
+    if (userId && nutritions.length === 0) {
+      fetchNutritionLogs();
+    }
+  }, [setAllNutritions, setLoading, setNotification, userId, nutritions]);
 };
 
 export default useNutritionLogs;

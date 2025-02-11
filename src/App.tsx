@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -21,13 +21,14 @@ import Create from './views/Create';
 import Home from './views/Home';
 import Records from './views/Records';
 import Graph from './views/Graph';
+import useGetAllNutritions from './hooks/useGetAllNutritions';
 
 const Stack = createNativeStackNavigator<Routes>();
 
 function MyStack() {
   const colorScheme = useColorScheme();
   const theme = colorScheme === 'dark' ? darkTheme : lightTheme;
-  const {notification, userId} = useAppStore();
+  const {notification} = useAppStore();
 
   return (
     <NavigationContainer>

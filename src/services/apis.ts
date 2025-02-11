@@ -93,6 +93,7 @@ export const getAllNutritionLogs = async () => {
     );
 
     console.log('Fetched daily records with logs:', dailyRecordsWithLogs);
+    dailyRecordsWithLogs.sort((a, b) => a.date > b.date ? -1 : 1);
     return dailyRecordsWithLogs;
   } catch (error) {
     console.error('Error fetching daily records and logs:', error);

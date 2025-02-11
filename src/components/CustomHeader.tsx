@@ -2,9 +2,11 @@ import React from 'react';
 import {View, Text, Image, StyleSheet, useColorScheme} from 'react-native';
 import {GoogleSigninSampleApp} from './SignIn';
 import {useStyles} from '../styles/styles';
+import useGetAllNutritions from '../hooks/useGetAllNutritions';
 
 const CustomHeader = () => {
   const {themeColor} = useStyles();
+  useGetAllNutritions();
 
   return (
     <View style={[styles.headerContainer, themeColor.primary]}>

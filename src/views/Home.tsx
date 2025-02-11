@@ -17,7 +17,6 @@ type HomeProps = NativeStackScreenProps<Routes, 'Home'>;
 const Home: React.FC<HomeProps> = ({navigation}) => {
   const {setNotification} = useAppStore();
   const {variables, themeColor} = useStyles();
-
   const onClickTab = (tab: string) => {
     if (!auth().currentUser?.uid) {
       return setNotification(
