@@ -159,9 +159,6 @@ export const saveLog = async () => {
       ...logSnapshot.data()
     } as MealLog;
 
-
-    setLoading(false, LoadingStatus.Success);
-    setNotification(NotifyType.Success, 'Log added successfully!');
     return { success: true, result: logData };
 
   } catch (error) {

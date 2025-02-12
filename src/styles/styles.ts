@@ -1,6 +1,6 @@
 // styles.js
-import {StyleSheet, FlexAlignType, useColorScheme} from 'react-native';
-import {lightTheme, darkTheme} from './theme';
+import { StyleSheet, FlexAlignType, useColorScheme } from 'react-native';
+import { lightTheme, darkTheme } from './theme';
 
 // Common button styles
 const commonButton = {
@@ -68,6 +68,11 @@ export const useStyles = () => {
       primary: {
         backgroundColor: theme.primary_bg,
         color: theme.text_primary,
+        borderColor: theme.borders_dividers,
+      },
+      secondary: {
+        backgroundColor: theme.secondary_bg,
+        color: theme.text_secondary,
         borderColor: theme.borders_dividers,
       },
     }),

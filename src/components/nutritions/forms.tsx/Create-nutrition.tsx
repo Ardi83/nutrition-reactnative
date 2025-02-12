@@ -5,9 +5,10 @@ import MealTypeDropdown from '../../MealTypeDropdown';
 import {useStyles} from '../../../styles/styles';
 import DatePicker from '../../DatePicker';
 import {saveLog} from '../../../services/service';
-import {LoadingStatus} from '../../../types/index.d';
+import {LoadingStatus, NotifyType} from '../../../types/index.d';
+import {NavigationProp} from '@react-navigation/native';
 
-const CreateForm = () => {
+const CreateForm = ({navigation}: {navigation: NavigationProp<any>}) => {
   const {themeColor, variables} = useStyles();
   const {
     createDto,
@@ -30,15 +31,17 @@ const CreateForm = () => {
     loading: {loading},
     setLoading,
     setMealLog,
+    setNotification,
+    resetForm,
   } = useAppStore();
 
   const handleSubmit = async () => {
     setLoading(true, LoadingStatus.Pending);
 
     const res = await saveLog();
-    console.log('create dto submit', res?.result);
     if (res && res.success && res.result) {
-      console.log('add to store');
+      setLoading(false, LoadingStatus.Success);
+      setNotification(NotifyType.Success, 'Log added successfully!');
       setMealLog({
         id: res.result.id,
         dateTime: selectedDate,
@@ -47,6 +50,8 @@ const CreateForm = () => {
         micronutrients: createDto.micronutrients,
         mealType: createDto.mealType,
       });
+      resetForm();
+      navigation.navigate('Records');
     }
   };
 

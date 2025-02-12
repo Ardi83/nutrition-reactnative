@@ -22,10 +22,10 @@ const useNutritionLogs = () => {
       }
     };
 
-    if (userId && nutritions.length === 0) {
+    if (userId) {
       fetchNutritionLogs();
     }
-  }, [setAllNutritions, setLoading, setNotification, userId, nutritions]);
+  }, [setAllNutritions, setLoading, setNotification, userId]);
 };
 
 export default useNutritionLogs;

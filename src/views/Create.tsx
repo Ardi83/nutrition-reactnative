@@ -8,7 +8,7 @@ import Gemini from '../components/Gemini';
 import {useAppStore} from '../store';
 
 type CreateProps = NativeStackScreenProps<Routes, 'Create'>;
-const Create: React.FC<CreateProps> = () => {
+const Create: React.FC<CreateProps> = ({navigation}) => {
   const {themeColor} = useStyles();
 
   return (
@@ -17,7 +17,7 @@ const Create: React.FC<CreateProps> = () => {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <ScrollView contentContainerStyle={{padding: 16}}>
         <Gemini />
-        <CreateForm />
+        <CreateForm navigation={navigation} />
       </ScrollView>
     </KeyboardAvoidingView>
   );

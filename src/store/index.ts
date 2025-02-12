@@ -105,6 +105,7 @@ interface AppState extends AppProps {
   setMealLog: (createDto: MealLog) => void;
   setAllNutritions: (nutritions: Nutrition[]) => void;
   setAIResponse: (aiResponse: CreateAIDto) => void;
+  resetForm: () => void;
   reset: () => void;
 }
 
@@ -166,7 +167,7 @@ export const useAppStore = create<AppState>(set => ({
           // If the nutrition entry exists, push the new log and update dailyRecord
           const nutrition = state.nutritions[nutritionIndex];
           nutrition.dailyRecord.logs.push(newMealLog);
-          nutrition.dailyRecord.logs.sort((a, b) => a.dateTime.getTime() - b.dateTime.getTime());
+          nutrition.dailyRecord.logs.sort((a, b) => b.dateTime.getTime() - a.dateTime.getTime());
 
           // Accumulate macronutrients (convert strings to numbers)
           for (const key in resultCreate.macronutrients) {
@@ -202,8 +203,15 @@ export const useAppStore = create<AppState>(set => ({
             },
           };
           state.nutritions.push(newNutrition);
-          state.nutritions.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+          state.nutritions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
         }
+      }),
+    ),
+  resetForm: () =>
+    set(
+      produce((state: AppState) => {
+        state.createDto = initialState.createDto;
+        state.selectedDate = initialState.selectedDate;
       }),
     ),
   setAllNutritions: (nutritions: Nutrition[]) =>

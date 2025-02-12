@@ -32,11 +32,12 @@ const DailyDropdown = ({
         <Picker
           selectedValue={day}
           onValueChange={itemValue => onSelectDay(itemValue)}
-          prompt="Select Day"
           style={[styles.picker, {color: themeColor.primary.color}]}>
+          {/* Placeholder option */}
+          <Picker.Item label="Select Day" value="" enabled={false} />
           {days.map(day => (
             <Picker.Item
-              style={{height: 30, padding: 0, margin: 0, overflow: 'hidden'}}
+              style={{height: 10, padding: 0, margin: 0, overflow: 'hidden'}}
               key={day}
               label={day}
               value={day}
